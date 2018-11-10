@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>マインスイーパー</title>
+    <style>
+        canvas { 
+            display: block; 
+            margin: auto;
+        }
+        #play {
+            text-align: center;
+            margin-top:15px;
+        }
+    </style>
+</head>
+
+<body>
+    <header style="text-align:center;">
+        <p>自由にプレーヤー名を入力＋対戦ルームを選んで「入室」を入力してください。</p>
+        <i>プレーヤー名：</i>
+        <input type="text" id="name_input" style="width:150px;">
+        <label>
+            <span class="title">　対戦ルーム：</span>
+            <select id="room" style="width:150px;">
+              <option value="roomA">ルームA</option>
+            </select>
+        </label>
+        <button onclick="start('room')">入室</button>
+        <div id="msg"></div>
+    </header>
+
+    <canvas width='500' height='500'></canvas>
+    <div id="play"></div>
+    <script src='js/render.js'></script>
+    <script src='js/logic.js'></script>
+</body>
+</html>
