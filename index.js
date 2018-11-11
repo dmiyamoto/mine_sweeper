@@ -138,11 +138,12 @@ app.get('/set' , function(req, res){
         var tmp2X = calcX - directions[h][0];
         var tmp2Y = calcY - directions[h][1];
         if((tmp2X >= 0) && (tmp2X < COLS) && (tmp2Y >= 0) && (tmp2Y < ROWS) && (state['map'][tmp2Y][tmp2X] !== 0)){
-          (state['map'][tmp2Y][tmp2X]['hasBom'])? counter = counter + 1 : counter = counter;
+          (state['map'][tmp2Y][tmp2X]['hasBom'])? counter = counter + 1 : counter = counter + 0;
         }
       }
       (counter !== 0)? state['map'][calcY][calcX] = {opened:true, hasBom:false, numBom:counter, hasFlag:false} : state['map'][calcY][calcX] = {opened:true, hasBom:false, numBom:"", hasFlag:false};
-      judge(calcY, calcX);      
+      console.log('before',calcX, calcY,state['map']);
+      judge(calcX, calcY);      
     }else if(state['map'][calcY][calcX]['opened']){
       msg = 'その場所は、既に開いています。';
       res.set('Access-Control-Allow-Origin', 'http://localhost:8000');
@@ -172,8 +173,8 @@ app.get('/draw' , function(req, res){
 });
 
 // 所定の箇所の周囲を判定し、開いていく関数
-function judge(calcY, calcX){
-  
+function judge(calcX, calcY){
+  console.log('calcX=',calcX, 'calcY=',calcY);
   for(var p = 0; p < directions.length; p++){
     var tmpX = calcX - directions[p][0];
     var tmpY = calcY - directions[p][1];
@@ -183,13 +184,15 @@ function judge(calcY, calcX){
         var tmp2X = tmpX - directions[g][0];
         var tmp2Y = tmpY - directions[g][1];
         if((tmp2X >= 0) && (tmp2X < COLS) && (tmp2Y >= 0) && (tmp2Y < ROWS) && (state['map'][tmp2Y][tmp2X] !== 0)){
-          (state['map'][tmp2Y][tmp2X]['hasBom'])? counter = counter + 1 : counter = counter;
+          (state['map'][tmp2Y][tmp2X]['hasBom'])? counter = counter + 1 : counter = counter + 0;
+          console.log('mid',state['map'][tmp2Y][tmp2X],tmp2X,tmp2Y,counter);
         }
       }
-      (counter !== 0)? state['map'][tmpY][tmpX] = {opened:true, hasBom:false, numBom:counter, hasFlag:false}:state['map'][tmpY][tmpX] = {opened:true, hasBom:false, numBom:"", hasFlag:false};
+      (counter !== 0)? state['map'][tmpY][tmpX] = {opened:true, hasBom:false, numBom:counter, hasFlag:false} : state['map'][tmpY][tmpX] = {opened:true, hasBom:false, numBom:"", hasFlag:false};
+      console.log('after',state['map'][tmpY][tmpX],tmpX,tmpY);
     }
   }
-
+  console.log('final',state['map'][tmpY][tmpX],tmpX,tmpY);
 }
 
 app.listen(PORT, function(){

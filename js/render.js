@@ -36,16 +36,18 @@ function drawAll() {
     xhr.onreadystatechange = () => {
       if(xhr.readyState === 4 && xhr.status === 200) {
         state_info = JSON.parse(xhr.responseText);
-        for(var q = 0; q < ROWS; q++){
-          for(var t = 0; t < COLS; t++){
+        console.log(state_info);
+        for(var q = 0; q < ROWS; q++){ //y座標の処理ループ
+          for(var t = 0; t < COLS; t++){ //x座標の処理ループ
             if (state_info[q][t] !== 0) { // 開いている箇所を描画
               if(state_info[q][t]['opened']) { // 開いている箇所を描画
                 ctx.fillStyle = 'rgb(207, 215, 223)'; 
                 ctx.fillRect( BLOCK_W * t , BLOCK_H * q, BLOCK_W - 1 , BLOCK_H - 1 );
-                if(state_info[q][t]['numBom'] !== ""){ // 周囲に爆弾があれば、爆弾の個数を描画
-                  ctx.font = "50px ＭＳ ゴシック";
+                // 該当箇所に爆弾が無く、周囲に爆弾があれば、爆弾の個数を描画
+                if((state_info[q][t]['hasBom'] === false) && (state_info[q][t]['numBom'] !== "")){
+                  ctx.font = "49px ＭＳ ゴシック";
                   ctx.fillStyle = "red";
-                  ctx.fillText(state_info[q][t]['numBom'], BLOCK_W * t , BLOCK_H * q);
+                  ctx.fillText(state_info[q][t]['numBom'], BLOCK_W * t , BLOCK_H * (q + 1)); //爆弾数はy座標1プラス
                 }
               }
             }
@@ -65,4 +67,4 @@ function render() {
 }
 
 // 60ミリ秒ごとに状態を描画する関数を呼び出す
-setInterval( drawAll, 6000 );
+setInterval( drawAll, 3000 );
