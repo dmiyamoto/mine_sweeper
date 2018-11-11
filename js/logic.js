@@ -57,35 +57,62 @@ function onClick(e) {
 
   // 当マインスイーパーアプリのサーバ側に接続する
   function start(idname){
-    init(); // 初期化処理
 
     var obj = document.getElementById(idname);
     var idx = obj.selectedIndex;       //インデックス番号を取得
     var opval = obj.options[idx].value;  //value値を取得
-    var optxt  = obj.options[idx].text;  //ラベルを取得    
-    var player = document.getElementById('name_input').value; // プレーヤー名を取得
-    var id = 'id' + Math.floor(Math.random() * 1111111) + player; // 当ユーザー用識別ID生成
-    localStorage.setItem("msweep",id); //ローカルストレージに当ユーザー用識別ID格納
-    
-    // ユーザー情報をサーバー側にセット
-    xhr = new XMLHttpRequest();
-    param = "id=" + id + "&player=" + player + "&opval=" + opval + "&optxt=" + optxt;
-    url = "http://localhost:8000/prepare/?" + param;
-    xhr.open('GET', url, true);
-    xhr.send();
+    var optxt  = obj.options[idx].text;  //ラベルを取得 
 
-    // サーバーからの応答内容を処理
-    xhr.onreadystatechange = () => {
-      if(xhr.readyState === 4 && xhr.status === 200) {
-        var msg = JSON.parse(xhr.responseText);
-        if(msg !== 'その部屋は他のプレーヤーが対戦中です。'){
-          var domMsg = document.createElement("div");
-          domMsg.innerHTML = new Date().toLocaleTimeString() + " " + msg;
-          msgArea.appendChild(domMsg);
-        }else{
+    // 試合途中の再入室か本当に試合を開始するのかを判定
+    if(localStorage.getItem("msweep") !== null){
+      var id = localStorage.getItem("msweep");
+      param = "id=" + id + "&opval=" + opval + "&optxt=" + optxt;
+      url = "http://localhost:8000/restart/?" + param;
+      xhr.open('GET', url, true);
+      xhr.send();
+
+      // サーバーからの応答内容を処理
+      xhr.onreadystatechange = () => {
+        if(xhr.readyState === 4 && xhr.status === 200) {
+          var msg = JSON.parse(xhr.responseText);
+          if(msg !== 'その部屋は他のプレーヤーが対戦中です。'){
+            init(); // 初期化処理
+            var domMsg = document.createElement("div");
+            domMsg.innerHTML = new Date().toLocaleTimeString() + " " + msg;
+            msgArea.appendChild(domMsg);
+            play_flg = true;
+          }else{
             alert(msg);
+          }
+        }
+      }
+    }else{
+      init(); // 初期化処理
+      var player = document.getElementById('name_input').value; // プレーヤー名を取得
+      var id = 'id' + Math.floor(Math.random() * 1111111) + player; // 当ユーザー用識別ID生成
+      localStorage.setItem("msweep",id); //ローカルストレージに当ユーザー用識別ID格納
+      
+      // ユーザー情報をサーバー側にセット
+      xhr = new XMLHttpRequest();
+      param = "id=" + id + "&player=" + player + "&opval=" + opval + "&optxt=" + optxt;
+      url = "http://localhost:8000/prepare/?" + param;
+      xhr.open('GET', url, true);
+      xhr.send();
+
+      // サーバーからの応答内容を処理
+      xhr.onreadystatechange = () => {
+        if(xhr.readyState === 4 && xhr.status === 200) {
+          var msg = JSON.parse(xhr.responseText);
+          if(msg !== 'その部屋は他のプレーヤーが対戦中です。'){
+            var domMsg = document.createElement("div");
+            domMsg.innerHTML = new Date().toLocaleTimeString() + " " + msg;
+            msgArea.appendChild(domMsg);
+          }else{
+            alert(msg);
+          }
         }
       }
     }
+
   }
   

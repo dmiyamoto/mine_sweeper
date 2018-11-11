@@ -24,8 +24,8 @@ var init_state = {
     roomName: ""
   },
   score:{
-    one: "",
-    two: ""
+    one: 0,
+    two: 0
   }
 };
 
@@ -39,7 +39,6 @@ var y = 0; //座標取得用変数のROWS用
 
 var calcX;
 var calcY;
-var calcXY;
 
 var msg; // メッセージ用変数
 
@@ -67,20 +66,33 @@ app.get('/' , function(req, res){
 app.get('/prepare' , function(req, res){
   var room = req.query;
   var flag_room = false;
-	    switch (room['opval']){
-	        case 'roomA':
-	            if(roomA.length < 2){
-	            	var detail = {id:room['id'], player:room['player'], roomName:room['optxt']};
-	              roomA.push(detail);
-	            }else{
-	              flag_room = true;
-	            }
-	            break;
-	    }
+    switch (room['opval']){
+      case 'roomA':
+        if(roomA.length < 2){
+          var detail = {id:room['id'], player:room['player'], roomName:room['optxt']};
+          roomA.push(detail);
+        }else{
+          flag_room = true;
+        }
+        break;
+    }
 	(flag_room) ? msg = 'その部屋は他のプレーヤーが対戦中です。' : msg = room['player'] + "が、" + room['optxt'] + "に入室しました";
 
   res.set('Access-Control-Allow-Origin', 'http://localhost:8000');
   res.json(msg);
+});
+
+app.get('/restart' , function(req, res){
+  var room = req.query;
+  var reFlag = {flg:false, name:""};
+  switch (room['opval']){
+    case 'roomA':
+      [...Array(roomA.length)].reduce((acc,c,idx) => ((roomA[idx]['id'] === room['id'])? reFlag = {flg:true, name:roomA[idx]['player']} : ""),"");
+      (reFlag['flg']) ? msg = reFlag['name'] + "が、" + room['optxt'] + "に再入室しました" : msg = 'その部屋は他のプレーヤーが対戦中です。';
+      res.set('Access-Control-Allow-Origin', 'http://localhost:8000');
+      res.json(msg);
+      break;
+  }
 });
 
 app.get('/play' , function(req, res){
@@ -108,9 +120,16 @@ app.get('/play' , function(req, res){
   res.json(msg);
 });
 
+app.get('/status' , function(req, res){
+  (play_flg) ? msg = '試合が開始しましたので、よろしくお願いします。' : msg = "";
+  res.set('Access-Control-Allow-Origin', 'http://localhost:8000');
+  res.json({msg:msg,flg:play_flg});
+});
+
 app.get('/set' , function(req, res){
   var data = req.query;
-  if((play_flg === true) && (final_flg === false)){ // 試合中なら操作を可能とする
+  // 試合中かつ対象のプレイヤーなら、操作を可能とする
+  if( (play_flg) && (final_flg === false) && ((data['id'] === state['player']['oneID']) || (data['id'] === state['player']['twoID'])) ){
 		// y座標を取得
 		y = data['y'];
     for(var i = 0; i < ROWS; i++){
@@ -141,9 +160,12 @@ app.get('/set' , function(req, res){
           (state['map'][tmp2Y][tmp2X]['hasBom'])? counter = counter + 1 : counter = counter + 0;
         }
       }
-      (counter !== 0)? state['map'][calcY][calcX] = {opened:true, hasBom:false, numBom:counter, hasFlag:false} : state['map'][calcY][calcX] = {opened:true, hasBom:false, numBom:"", hasFlag:false};
-      console.log('before',calcX, calcY,state['map']);
-      judge(calcX, calcY);      
+
+      // 該当箇所を開き、対象プレーヤーに得点を加算し、周囲のマスを開く
+      (counter !== 0) ? state['map'][calcY][calcX] = {opened:true, hasBom:false, numBom:counter, hasFlag:false} : state['map'][calcY][calcX] = {opened:true, hasBom:false, numBom:"", hasFlag:false};
+      // console.log('before',calcX, calcY,state['map']);
+      (state['player']['oneID'] === data['id']) ? state['score']['one'] = state['score']['one'] + 1 : state['score']['two'] = state['score']['two'] + 1 ;
+      judge(calcX, calcY, data['id']);      
     }else if(state['map'][calcY][calcX]['opened']){
       msg = 'その場所は、既に開いています。';
       res.set('Access-Control-Allow-Origin', 'http://localhost:8000');
@@ -168,13 +190,28 @@ app.get('/set' , function(req, res){
 });
 
 app.get('/draw' , function(req, res){
+  var cnt = 0;
+  // 爆弾が埋まっている数＋現在開いているマスの数を計測
+  (play_flg)?[...Array(ROWS)].reduce((acc,c,idx) => ([...Array(COLS)].reduce((acc2,c2,idx2) => ((state['map'][idx][idx2] !== 0) ? cnt = cnt + 1 : cnt = cnt + 0),"")),""):"";
   res.set('Access-Control-Allow-Origin', 'http://localhost:8000');
-  res.json(state['map']);
+  if(cnt !== (COLS * ROWS)){
+    res.json({msg:"", map:state['map']});
+  }else{
+    final_flg = true;
+    var part = '  ' + state['player']['one'] + 'さん：' + state['score']['one'] + '点\n  ' + state['player']['two'] + 'さん：' + state['score']['two'];
+    if(state['score']['one'] === state['score']['two']){
+      res.json({msg:'この勝負は引き分けになります。\n' + part});
+    }else if(state['score']['one'] > state['score']['two']){
+      res.json({msg:state['player']['one'] + 'さんの勝利です。\n' + part});
+    }else{
+      res.json({msg:state['player']['two'] + 'さんの勝利です。\n' + part});
+    }
+  }
 });
 
 // 所定の箇所の周囲を判定し、開いていく関数
-function judge(calcX, calcY){
-  console.log('calcX=',calcX, 'calcY=',calcY);
+function judge(calcX, calcY, playerID){
+  // console.log('calcX=',calcX, 'calcY=',calcY);
   for(var p = 0; p < directions.length; p++){
     var tmpX = calcX - directions[p][0];
     var tmpY = calcY - directions[p][1];
@@ -185,14 +222,16 @@ function judge(calcX, calcY){
         var tmp2Y = tmpY - directions[g][1];
         if((tmp2X >= 0) && (tmp2X < COLS) && (tmp2Y >= 0) && (tmp2Y < ROWS) && (state['map'][tmp2Y][tmp2X] !== 0)){
           (state['map'][tmp2Y][tmp2X]['hasBom'])? counter = counter + 1 : counter = counter + 0;
-          console.log('mid',state['map'][tmp2Y][tmp2X],tmp2X,tmp2Y,counter);
+          // console.log('mid',state['map'][tmp2Y][tmp2X],tmp2X,tmp2Y,counter);
         }
       }
-      (counter !== 0)? state['map'][tmpY][tmpX] = {opened:true, hasBom:false, numBom:counter, hasFlag:false} : state['map'][tmpY][tmpX] = {opened:true, hasBom:false, numBom:"", hasFlag:false};
-      console.log('after',state['map'][tmpY][tmpX],tmpX,tmpY);
+      // 該当箇所を開き、対象プレーヤーに得点を加算
+      (counter !== 0) ? state['map'][tmpY][tmpX] = {opened:true, hasBom:false, numBom:counter, hasFlag:false} : state['map'][tmpY][tmpX] = {opened:true, hasBom:false, numBom:"", hasFlag:false};
+      (state['player']['oneID'] === playerID) ? state['score']['one'] = state['score']['one'] + 1 : state['score']['two'] = state['score']['two'] + 1 ;
+      // console.log('after',state['map'][tmpY][tmpX],tmpX,tmpY);
     }
   }
-  console.log('final',state['map'][tmpY][tmpX],tmpX,tmpY);
+  // console.log('final',state['map'][tmpY][tmpX],tmpX,tmpY);
 }
 
 app.listen(PORT, function(){
