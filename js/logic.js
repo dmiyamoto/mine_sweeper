@@ -17,7 +17,7 @@ function onClick(e) {
     xhr.onreadystatechange = () => {
       if(xhr.readyState === 4 && xhr.status === 200) {
         var msg = JSON.parse(xhr.responseText);
-        alert(msg);
+        (msg !== "") ? alert(msg) : "";
       }
     }
 
@@ -29,7 +29,6 @@ function onClick(e) {
   // 対戦開始前：プレイヤーが揃っているか否かをチェックし、先行(黒)と後攻(白)を決め、対戦を開始する
   // 対戦中：対戦中の旨をアラートを表示
   function play(){
-    xhr = new XMLHttpRequest();
     url = "http://localhost:8000/play/";
     xhr.open('GET', url, true);
     xhr.send();
@@ -37,7 +36,8 @@ function onClick(e) {
     // サーバーからの応答内容を処理
     xhr.onreadystatechange = () => {
       if(xhr.readyState === 4 && xhr.status === 200) {
-        play_flg = true;
+        play_flg = true; //試合開始する
+        document.getElementById('flg_img').disabled = false; // フラグモードボタンの操作を可能にする
         var msg = JSON.parse(xhr.responseText);
         alert(msg);
       }
@@ -45,6 +45,32 @@ function onClick(e) {
 
   }
   
+  // フラグモード設定ボタンがクリックされた動作する関数（フラグモード：ONの際は爆弾の箇所にフラグを建てる）
+  function flg_button(){
+    var id = localStorage.getItem("msweep");
+    param = "id=" + id;
+    url = "http://localhost:8000/flgmode/?" + param;
+    xhr.open('GET', url, true);
+    xhr.send();
+
+    // サーバーからの応答内容を処理
+    xhr.onreadystatechange = () => {
+      if(xhr.readyState === 4 && xhr.status === 200) {
+        var tempRes = JSON.parse(xhr.responseText);
+        if(tempRes['flgmode'] !== ""){
+          flg_mode = tempRes['flgmode'];
+          (flg_mode) ? document.getElementById('flg_mode').innerHTML = "フラグモード：ON" : document.getElementById('flg_mode').innerHTML = "フラグモード：OFF";
+        }else{
+          final_flg = true; //試合終了フラグをONにする
+          document.getElementById('flg_img').disabled = true; // フラグモードボタンの操作を不可にする
+          msg = tempRes['msg'];
+          alert(msg);
+        }
+      }
+    }
+
+  }
+
   // 盤面を空にし、マスを作成する。
   function init() {
     for ( var y = 0; y < ROWS; ++y ) {
@@ -53,6 +79,7 @@ function onClick(e) {
       }
     }
     document.getElementById('play').innerHTML = "<button id='competition_start' onclick='play()'>対戦開始</button>";
+    document.getElementById('flg').innerHTML = "<button id='flg_img' onclick='flg_button()' disabled ><img src='/img/flag_img.png' width='50' height='50'></button><i id='flg_mode'>フラグモード：OFF</i>"
   }
 
   // 当マインスイーパーアプリのサーバ側に接続する
@@ -93,7 +120,6 @@ function onClick(e) {
       localStorage.setItem("msweep",id); //ローカルストレージに当ユーザー用識別ID格納
       
       // ユーザー情報をサーバー側にセット
-      xhr = new XMLHttpRequest();
       param = "id=" + id + "&player=" + player + "&opval=" + opval + "&optxt=" + optxt;
       url = "http://localhost:8000/prepare/?" + param;
       xhr.open('GET', url, true);

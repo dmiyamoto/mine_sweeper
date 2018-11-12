@@ -5,12 +5,27 @@
     <title>マインスイーパー</title>
     <style>
         canvas { 
-            display: block; 
-            margin: auto;
+          display: block; 
+          margin: auto;
         }
         #play {
-            text-align: center;
-            margin-top:15px;
+          text-align: center;
+          margin-top:15px;
+        }
+        #flg {
+          text-align: center;
+          margin: 5px auto;
+          height: 5px;
+        }
+        #flg_img {
+          position:relative; 
+          top:10px;
+          left:380px;
+        }
+        #flg_mode {
+          position:relative; 
+          top:40px;
+          left:310px;
         }
     </style>
 </head>
@@ -30,9 +45,10 @@
         <div id="msg"></div>
     </header>
 
-    <canvas width='500' height='500'></canvas>
+    <div id="flg"></div>
+    <canvas width="500" height="500"></canvas>
     <div id="play"></div>
-    <script src='js/render.js'></script>
-    <script src='js/logic.js'></script>
+    <script src="js/render.js"></script>
+    <script src="js/logic.js"></script>
 </body>
 </html>

@@ -11,6 +11,7 @@ var y = 0; //座標取得用変数のROWS用
 
 var play_flg = false; //試合中か否かの判定フラグ
 var final_flg = false; //試合終了したか否かの判定フラグ
+var flg_mode = false; //フラグモードか否かの判定フラグ
 
 var xhr = new XMLHttpRequest(); // Ajaxの設定
 var url; // ルーティング用変数
@@ -28,40 +29,54 @@ function drawBlock( x, y ) {
 function drawAll() {
   if(play_flg){
     
-    var tmpResponse;
-    var state_info;
-    url = "http://localhost:8000/draw/";
-    xhr.open('GET', url, true);
-    xhr.send();
+    if(final_flg === false){
+      var tmpResponse;
+      var state_info;
+      url = "http://localhost:8000/draw/";
+      xhr.open('GET', url, true);
+      xhr.send();
 
-    // サーバーからの応答内容を処理
-    xhr.onreadystatechange = () => {
-      if(xhr.readyState === 4 && xhr.status === 200) {
-        tmpResponse = JSON.parse(xhr.responseText);
-        if(tmpResponse['msg'] === ""){
-          state_info = tmpResponse['map'];
-          console.log(state_info);
-          for(var q = 0; q < ROWS; q++){ //y座標の処理ループ
-            for(var t = 0; t < COLS; t++){ //x座標の処理ループ
-              if (state_info[q][t] !== 0) { // 開いている箇所を描画
-                if(state_info[q][t]['opened']) { // 開いている箇所を描画
-                  ctx.fillStyle = 'rgb(207, 215, 223)'; 
-                  ctx.fillRect( BLOCK_W * t , BLOCK_H * q, BLOCK_W - 1 , BLOCK_H - 1 );
-                  // 該当箇所に爆弾が無く、周囲に爆弾があれば、爆弾の個数を描画
-                  if((state_info[q][t]['hasBom'] === false) && (state_info[q][t]['numBom'] !== "")){
-                    ctx.font = "49px ＭＳ ゴシック";
-                    ctx.fillStyle = "red";
-                    ctx.fillText(state_info[q][t]['numBom'], BLOCK_W * t , BLOCK_H * (q + 1)); //爆弾数はy座標1プラス
+      // サーバーからの応答内容を処理
+      xhr.onreadystatechange = () => {
+        if(xhr.readyState === 4 && xhr.status === 200) {
+          tmpResponse = JSON.parse(xhr.responseText);
+          if(tmpResponse['msg'] === ""){
+            state_info = tmpResponse['map'];
+            console.log(state_info);
+            for(var q = 0; q < ROWS; q++){ //y座標の処理ループ
+              for(var t = 0; t < COLS; t++){ //x座標の処理ループ
+                if (state_info[q][t] !== 0) { // 開いている箇所を描画
+                  if((state_info[q][t]['opened']) && (state_info[q][t]['hasFlag'] === false)) {
+                    ctx.fillStyle = 'rgb(207, 215, 223)'; 
+                    ctx.fillRect( BLOCK_W * t , BLOCK_H * q, BLOCK_W - 1 , BLOCK_H - 1 );
+                    // 該当箇所に爆弾が無く、周囲に爆弾があれば、爆弾の個数を描画
+                    if((state_info[q][t]['hasBom'] === false) && (state_info[q][t]['numBom'] !== "")){
+                      ctx.font = "49px ＭＳ ゴシック";
+                      ctx.fillStyle = "red";
+                      ctx.fillText(state_info[q][t]['numBom'], BLOCK_W * t , BLOCK_H * (q + 1)); //爆弾数はy座標1プラス
+                    }
+                  }else if((state_info[q][t]['opened']) && (state_info[q][t]['hasFlag'])) {
+                    ctx.fillStyle = 'rgb(207, 215, 223)'; 
+                    ctx.fillRect( BLOCK_W * t , BLOCK_H * q, BLOCK_W - 1 , BLOCK_H - 1 );
+                    // フラグ画像を描画
+                    var img = new Image();
+                    img.src = "/img/flag_img.png";
+                    ctx.drawImage(img, BLOCK_W * t , BLOCK_H * q, BLOCK_W, BLOCK_H);
+                  }else if((state_info[q][t]['opened'] === false) && (state_info[q][t]['hasBom'])) {
+                    drawBlock( t, q ); //閉じている箇所を描画
                   }
+                }else{
+                  drawBlock( t, q ); //閉じている箇所を描画
                 }
-              }
-            } 
-          }
-        }else{
-          // 試合終了のメッセージ表示
-          if(final_flg === false){
-            final_flg = true;
-            alert(tmpResponse['msg']);
+              } 
+            }
+          }else{
+            // 試合終了のメッセージ表示
+            if(final_flg === false){
+              final_flg = true; //試合終了フラグをONにする
+              document.getElementById('flg_img').disabled = true; // フラグモードボタンの操作を不可にする
+              alert(tmpResponse['msg']);
+            }
           }
         }
       }
@@ -78,7 +93,8 @@ function drawAll() {
     xhr.onreadystatechange = () => {
       if(xhr.readyState === 4 && xhr.status === 200) {
         tmpResponse = JSON.parse(xhr.responseText);
-        (tmpResponse['flg'])? play_flg = tmpResponse['flg'] : "";
+        (tmpResponse['flg'])? play_flg = tmpResponse['flg'] : ""; //試合開始する
+        (tmpResponse['flg'])? document.getElementById('flg_img').disabled = false : ""; // フラグモードボタンの操作を可能にする
         (tmpResponse['msg'] !== "")? alert(tmpResponse['msg']) : "";
       }
     }

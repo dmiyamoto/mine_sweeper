@@ -23,6 +23,10 @@ var init_state = {
     twoID:"",
     roomName: ""
   },
+  flg_mode: {
+    one: false,
+    two: false
+  },
   score:{
     one: 0,
     two: 0
@@ -58,6 +62,7 @@ const directions = [
 var roomA = [];
 
 app.use('/js',express.static(__dirname + '/js'));
+app.use('/img',express.static(__dirname + '/img'));
 
 app.get('/' , function(req, res){
   res.sendFile(__dirname+'/index.html');
@@ -93,6 +98,24 @@ app.get('/restart' , function(req, res){
       res.json(msg);
       break;
   }
+});
+
+app.get('/flgmode' , function(req, res){
+  var flgmode_data = req.query;
+  if((state['player']['oneID'] === flgmode_data['id']) || (state['player']['twoID'] === flgmode_data['id'])){
+    if(state['player']['oneID'] === flgmode_data['id']){
+      (state['flg_mode']['one']) ? state['flg_mode']['one'] = false : state['flg_mode']['one'] = true;
+      msg = {msg:"",flgmode:state['flg_mode']['one']};
+    }else{
+      (state['flg_mode']['two']) ? state['flg_mode']['two'] = false : state['flg_mode']['two'] = true;
+      msg = {msg:"",flgmode:state['flg_mode']['two']};
+    }
+  }else{
+    msg = {msg:'対戦中のプレーヤーでは無い人物の操作を検知したので試合終了します。',flgmode:""};
+    final_flg = true;
+  }
+  res.set('Access-Control-Allow-Origin', 'http://localhost:8000');
+  res.json(msg);
 });
 
 app.get('/play' , function(req, res){
@@ -161,31 +184,72 @@ app.get('/set' , function(req, res){
         }
       }
 
-      // 該当箇所を開き、対象プレーヤーに得点を加算し、周囲のマスを開く
-      (counter !== 0) ? state['map'][calcY][calcX] = {opened:true, hasBom:false, numBom:counter, hasFlag:false} : state['map'][calcY][calcX] = {opened:true, hasBom:false, numBom:"", hasFlag:false};
-      // console.log('before',calcX, calcY,state['map']);
-      (state['player']['oneID'] === data['id']) ? state['score']['one'] = state['score']['one'] + 1 : state['score']['two'] = state['score']['two'] + 1 ;
-      judge(calcX, calcY, data['id']);      
-    }else if(state['map'][calcY][calcX]['opened']){
-      msg = 'その場所は、既に開いています。';
-      res.set('Access-Control-Allow-Origin', 'http://localhost:8000');
-      res.json(msg);
-    }else if(state['map'][calcY][calcX]['hasBom']){
-      final_flg = true;
-      (state['player']['oneID'] === data['id']) ? msg = '爆弾に引っかかったので、' + state['player']['one'] + 'さんの負けになります。' : msg = '爆弾に引っかかっ他ので、' + state['player']['two'] + 'さんの負けになります。';
-      res.set('Access-Control-Allow-Origin', 'http://localhost:8000');
-      res.json(msg);
+      if(state['player']['oneID'] === data['id']){
+        if(state['flg_mode']['one']){
+          // 該当箇所を開き、対象プレーヤーから得点を減算する(間違った箇所にフラグを立てているため)
+          (counter !== 0) ? state['map'][calcY][calcX] = {opened:true, hasBom:false, numBom:counter, hasFlag:true} : state['map'][calcY][calcX] = {opened:true, hasBom:false, numBom:"", hasFlag:true};
+          state['score']['one'] = state['score']['one'] - 1;
+        }else{
+          // 該当箇所を開き、対象プレーヤーに得点を加算し、周囲のマスを開く
+          (counter !== 0) ? state['map'][calcY][calcX] = {opened:true, hasBom:false, numBom:counter, hasFlag:false} : state['map'][calcY][calcX] = {opened:true, hasBom:false, numBom:"", hasFlag:false};
+          state['score']['one'] = state['score']['one'] + 1;
+          judge(calcX, calcY, data['id']);
+        }
+      }else if(state['player']['twoID'] === data['id']){
+        if(state['flg_mode']['two']){
+          // 該当箇所を開き、対象プレーヤーから得点を減算する(間違った箇所にフラグを立てているため)
+          (counter !== 0) ? state['map'][calcY][calcX] = {opened:true, hasBom:false, numBom:counter, hasFlag:true} : state['map'][calcY][calcX] = {opened:true, hasBom:false, numBom:"", hasFlag:true};
+          state['score']['two'] = state['score']['two'] - 1;
+        }else{
+          // 該当箇所を開き、対象プレーヤーに得点を加算し、周囲のマスを開く
+          (counter !== 0) ? state['map'][calcY][calcX] = {opened:true, hasBom:false, numBom:counter, hasFlag:false} : state['map'][calcY][calcX] = {opened:true, hasBom:false, numBom:"", hasFlag:false};
+          state['score']['two'] = state['score']['two'] + 1;
+          judge(calcX, calcY, data['id']);
+        }
+      }
+      msg = "";
+    }else if((state['map'][calcY][calcX]['opened']) && (state['map'][calcY][calcX]['hasFlag'] === false)){
+      msg = "";
+    }else if((state['map'][calcY][calcX]['opened']) && (state['map'][calcY][calcX]['hasFlag']) && (state['map'][calcY][calcX]['hasBom'] === false)){
+      if((state['player']['oneID'] === data['id']) && (state['flg_mode']['one'])){
+        state['map'][calcY][calcX] = 0;
+        state['score']['one'] = state['score']['one'] + 1;
+      }else if((state['player']['twoID'] === data['id']) && (state['flg_mode']['two'])){
+        state['map'][calcY][calcX] = 0;
+        state['score']['two'] = state['score']['two'] + 1;
+      }
+      msg = "";
+    }else if((state['map'][calcY][calcX]['opened']) && (state['map'][calcY][calcX]['hasFlag']) && (state['map'][calcY][calcX]['hasBom'])){
+      if((state['player']['oneID'] === data['id']) && (state['flg_mode']['one'])){
+        state['map'][calcY][calcX] = {opened:false, hasBom:true, numBom:"", hasFlag:false};
+        state['score']['one'] = state['score']['one'] - 1;
+      }else if((state['player']['twoID'] === data['id']) && (state['flg_mode']['two'])){
+        state['map'][calcY][calcX] = {opened:false, hasBom:true, numBom:"", hasFlag:false};
+        state['score']['two'] = state['score']['two'] - 1;
+      }
+      msg = "";
+    }else if((state['map'][calcY][calcX]['opened'] === false) && (state['map'][calcY][calcX]['hasBom'])){
+      if((state['player']['oneID'] === data['id']) && (state['flg_mode']['one'])){
+        state['map'][calcY][calcX] = {opened:true, hasBom:true, numBom:"", hasFlag:true};
+        state['score']['one'] = state['score']['one'] + 1;
+        msg = "";
+      }else if((state['player']['twoID'] === data['id']) && (state['flg_mode']['two'])){
+        state['map'][calcY][calcX] = {opened:true, hasBom:true, numBom:"", hasFlag:true};
+        state['score']['two'] = state['score']['two'] + 1;
+        msg = "";
+      }else{
+        final_flg = true;
+        (state['player']['oneID'] === data['id']) ? msg = '爆弾に引っかかったので、' + state['player']['one'] + 'さんの負けになります。' : msg = '爆弾に引っかかっ他ので、' + state['player']['two'] + 'さんの負けになります。';
+      }
     }
 
   }else if((play_flg === false) && (final_flg === false)){
     msg = 'まだ試合中では無いので操作できません。';
-    res.set('Access-Control-Allow-Origin', 'http://localhost:8000');
-    res.json(msg);
   }else{
     msg = '試合は終了しました。再試合を希望される場合は当サイトを再度読み込んでください。';
-    res.set('Access-Control-Allow-Origin', 'http://localhost:8000');
-    res.json(msg);
   }
+  res.set('Access-Control-Allow-Origin', 'http://localhost:8000');
+  res.json(msg);
 
 });
 
@@ -211,7 +275,6 @@ app.get('/draw' , function(req, res){
 
 // 所定の箇所の周囲を判定し、開いていく関数
 function judge(calcX, calcY, playerID){
-  // console.log('calcX=',calcX, 'calcY=',calcY);
   for(var p = 0; p < directions.length; p++){
     var tmpX = calcX - directions[p][0];
     var tmpY = calcY - directions[p][1];
@@ -222,16 +285,13 @@ function judge(calcX, calcY, playerID){
         var tmp2Y = tmpY - directions[g][1];
         if((tmp2X >= 0) && (tmp2X < COLS) && (tmp2Y >= 0) && (tmp2Y < ROWS) && (state['map'][tmp2Y][tmp2X] !== 0)){
           (state['map'][tmp2Y][tmp2X]['hasBom'])? counter = counter + 1 : counter = counter + 0;
-          // console.log('mid',state['map'][tmp2Y][tmp2X],tmp2X,tmp2Y,counter);
         }
       }
       // 該当箇所を開き、対象プレーヤーに得点を加算
       (counter !== 0) ? state['map'][tmpY][tmpX] = {opened:true, hasBom:false, numBom:counter, hasFlag:false} : state['map'][tmpY][tmpX] = {opened:true, hasBom:false, numBom:"", hasFlag:false};
       (state['player']['oneID'] === playerID) ? state['score']['one'] = state['score']['one'] + 1 : state['score']['two'] = state['score']['two'] + 1 ;
-      // console.log('after',state['map'][tmpY][tmpX],tmpX,tmpY);
     }
   }
-  // console.log('final',state['map'][tmpY][tmpX],tmpX,tmpY);
 }
 
 app.listen(PORT, function(){
