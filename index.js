@@ -1,6 +1,7 @@
 const express = require('express');
 const app = express();
 const PORT = process.env.PORT || 8000;
+require('dotenv').config();
 
 // 初期ステータス一覧
 var init_state = {
@@ -83,7 +84,7 @@ app.get('/prepare' , function(req, res){
     }
 	(flag_room) ? msg = 'その部屋は他のプレーヤーが対戦中です。' : msg = room['player'] + "が、" + room['optxt'] + "に入室しました";
 
-  res.set('Access-Control-Allow-Origin', 'http://localhost:8000');
+  res.set('Access-Control-Allow-Origin', process.env.ALLOW_ORIGIN);
   res.json(msg);
 });
 
@@ -94,7 +95,7 @@ app.get('/restart' , function(req, res){
     case 'roomA':
       [...Array(roomA.length)].reduce((acc,c,idx) => ((roomA[idx]['id'] === room['id'])? reFlag = {flg:true, name:roomA[idx]['player']} : ""),"");
       (reFlag['flg']) ? msg = reFlag['name'] + "が、" + room['optxt'] + "に再入室しました" : msg = 'その部屋は他のプレーヤーが対戦中です。';
-      res.set('Access-Control-Allow-Origin', 'http://localhost:8000');
+      res.set('Access-Control-Allow-Origin', process.env.ALLOW_ORIGIN);
       res.json(msg);
       break;
   }
@@ -114,7 +115,7 @@ app.get('/flgmode' , function(req, res){
     msg = {msg:'対戦中のプレーヤーでは無い人物の操作を検知したので試合終了します。',flgmode:""};
     final_flg = true;
   }
-  res.set('Access-Control-Allow-Origin', 'http://localhost:8000');
+  res.set('Access-Control-Allow-Origin', process.env.ALLOW_ORIGIN);
   res.json(msg);
 });
 
@@ -139,13 +140,13 @@ app.get('/play' , function(req, res){
     msg = 'まだ対戦相手がいないので、試合開始できません。';
   }
 
-  res.set('Access-Control-Allow-Origin', 'http://localhost:8000');
+  res.set('Access-Control-Allow-Origin', process.env.ALLOW_ORIGIN);
   res.json(msg);
 });
 
 app.get('/status' , function(req, res){
   (play_flg) ? msg = '試合が開始しましたので、よろしくお願いします。' : msg = "";
-  res.set('Access-Control-Allow-Origin', 'http://localhost:8000');
+  res.set('Access-Control-Allow-Origin', process.env.ALLOW_ORIGIN);
   res.json({msg:msg,flg:play_flg});
 });
 
@@ -248,7 +249,7 @@ app.get('/set' , function(req, res){
   }else{
     msg = '試合は終了しました。再試合を希望される場合は当サイトを再度読み込んでください。';
   }
-  res.set('Access-Control-Allow-Origin', 'http://localhost:8000');
+  res.set('Access-Control-Allow-Origin', process.env.ALLOW_ORIGIN);
   res.json(msg);
 
 });
