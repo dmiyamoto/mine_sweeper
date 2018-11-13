@@ -6,16 +6,28 @@ require('dotenv').config();
 // 初期ステータス一覧
 var init_state = {
   map: [
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [{opened:false, hasBom:false, numBom:"", hasFlag:false}, {opened:false, hasBom:false, numBom:"", hasFlag:false}, {opened:false, hasBom:false, numBom:"", hasFlag:false}, {opened:false, hasBom:false, numBom:"", hasFlag:false}, {opened:false, hasBom:false, numBom:"", hasFlag:false}, {opened:false, hasBom:false, numBom:"", hasFlag:false}, {opened:false, hasBom:false, numBom:"", hasFlag:false}, {opened:false, hasBom:false, numBom:"", hasFlag:false}, {opened:false, hasBom:false, numBom:"", hasFlag:false}, {opened:false, hasBom:false, numBom:"", hasFlag:false}],
+    [{opened:false, hasBom:false, numBom:"", hasFlag:false}, {opened:false, hasBom:false, numBom:"", hasFlag:false}, {opened:false, hasBom:false, numBom:"", hasFlag:false}, {opened:false, hasBom:false, numBom:"", hasFlag:false}, {opened:false, hasBom:false, numBom:"", hasFlag:false}, {opened:false, hasBom:false, numBom:"", hasFlag:false}, {opened:false, hasBom:false, numBom:"", hasFlag:false}, {opened:false, hasBom:false, numBom:"", hasFlag:false}, {opened:false, hasBom:false, numBom:"", hasFlag:false}, {opened:false, hasBom:false, numBom:"", hasFlag:false}],
+    [{opened:false, hasBom:false, numBom:"", hasFlag:false}, {opened:false, hasBom:false, numBom:"", hasFlag:false}, {opened:false, hasBom:false, numBom:"", hasFlag:false}, {opened:false, hasBom:false, numBom:"", hasFlag:false}, {opened:false, hasBom:false, numBom:"", hasFlag:false}, {opened:false, hasBom:false, numBom:"", hasFlag:false}, {opened:false, hasBom:false, numBom:"", hasFlag:false}, {opened:false, hasBom:false, numBom:"", hasFlag:false}, {opened:false, hasBom:false, numBom:"", hasFlag:false}, {opened:false, hasBom:false, numBom:"", hasFlag:false}],
+    [{opened:false, hasBom:false, numBom:"", hasFlag:false}, {opened:false, hasBom:false, numBom:"", hasFlag:false}, {opened:false, hasBom:false, numBom:"", hasFlag:false}, {opened:false, hasBom:false, numBom:"", hasFlag:false}, {opened:false, hasBom:false, numBom:"", hasFlag:false}, {opened:false, hasBom:false, numBom:"", hasFlag:false}, {opened:false, hasBom:false, numBom:"", hasFlag:false}, {opened:false, hasBom:false, numBom:"", hasFlag:false}, {opened:false, hasBom:false, numBom:"", hasFlag:false}, {opened:false, hasBom:false, numBom:"", hasFlag:false}],
+    [{opened:false, hasBom:false, numBom:"", hasFlag:false}, {opened:false, hasBom:false, numBom:"", hasFlag:false}, {opened:false, hasBom:false, numBom:"", hasFlag:false}, {opened:false, hasBom:false, numBom:"", hasFlag:false}, {opened:false, hasBom:false, numBom:"", hasFlag:false}, {opened:false, hasBom:false, numBom:"", hasFlag:false}, {opened:false, hasBom:false, numBom:"", hasFlag:false}, {opened:false, hasBom:false, numBom:"", hasFlag:false}, {opened:false, hasBom:false, numBom:"", hasFlag:false}, {opened:false, hasBom:false, numBom:"", hasFlag:false}],
+    [{opened:false, hasBom:false, numBom:"", hasFlag:false}, {opened:false, hasBom:false, numBom:"", hasFlag:false}, {opened:false, hasBom:false, numBom:"", hasFlag:false}, {opened:false, hasBom:false, numBom:"", hasFlag:false}, {opened:false, hasBom:false, numBom:"", hasFlag:false}, {opened:false, hasBom:false, numBom:"", hasFlag:false}, {opened:false, hasBom:false, numBom:"", hasFlag:false}, {opened:false, hasBom:false, numBom:"", hasFlag:false}, {opened:false, hasBom:false, numBom:"", hasFlag:false}, {opened:false, hasBom:false, numBom:"", hasFlag:false}],
+    [{opened:false, hasBom:false, numBom:"", hasFlag:false}, {opened:false, hasBom:false, numBom:"", hasFlag:false}, {opened:false, hasBom:false, numBom:"", hasFlag:false}, {opened:false, hasBom:false, numBom:"", hasFlag:false}, {opened:false, hasBom:false, numBom:"", hasFlag:false}, {opened:false, hasBom:false, numBom:"", hasFlag:false}, {opened:false, hasBom:false, numBom:"", hasFlag:false}, {opened:false, hasBom:false, numBom:"", hasFlag:false}, {opened:false, hasBom:false, numBom:"", hasFlag:false}, {opened:false, hasBom:false, numBom:"", hasFlag:false}],
+    [{opened:false, hasBom:false, numBom:"", hasFlag:false}, {opened:false, hasBom:false, numBom:"", hasFlag:false}, {opened:false, hasBom:false, numBom:"", hasFlag:false}, {opened:false, hasBom:false, numBom:"", hasFlag:false}, {opened:false, hasBom:false, numBom:"", hasFlag:false}, {opened:false, hasBom:false, numBom:"", hasFlag:false}, {opened:false, hasBom:false, numBom:"", hasFlag:false}, {opened:false, hasBom:false, numBom:"", hasFlag:false}, {opened:false, hasBom:false, numBom:"", hasFlag:false}, {opened:false, hasBom:false, numBom:"", hasFlag:false}],
+    [{opened:false, hasBom:false, numBom:"", hasFlag:false}, {opened:false, hasBom:false, numBom:"", hasFlag:false}, {opened:false, hasBom:false, numBom:"", hasFlag:false}, {opened:false, hasBom:false, numBom:"", hasFlag:false}, {opened:false, hasBom:false, numBom:"", hasFlag:false}, {opened:false, hasBom:false, numBom:"", hasFlag:false}, {opened:false, hasBom:false, numBom:"", hasFlag:false}, {opened:false, hasBom:false, numBom:"", hasFlag:false}, {opened:false, hasBom:false, numBom:"", hasFlag:false}, {opened:false, hasBom:false, numBom:"", hasFlag:false}],
+    [{opened:false, hasBom:false, numBom:"", hasFlag:false}, {opened:false, hasBom:false, numBom:"", hasFlag:false}, {opened:false, hasBom:false, numBom:"", hasFlag:false}, {opened:false, hasBom:false, numBom:"", hasFlag:false}, {opened:false, hasBom:false, numBom:"", hasFlag:false}, {opened:false, hasBom:false, numBom:"", hasFlag:false}, {opened:false, hasBom:false, numBom:"", hasFlag:false}, {opened:false, hasBom:false, numBom:"", hasFlag:false}, {opened:false, hasBom:false, numBom:"", hasFlag:false}, {opened:false, hasBom:false, numBom:"", hasFlag:false}],
+  ],
+  client: [
+    [{opened:false},{opened:false},{opened:false},{opened:false},{opened:false},{opened:false},{opened:false},{opened:false},{opened:false},{opened:false}],
+    [{opened:false},{opened:false},{opened:false},{opened:false},{opened:false},{opened:false},{opened:false},{opened:false},{opened:false},{opened:false}],
+    [{opened:false},{opened:false},{opened:false},{opened:false},{opened:false},{opened:false},{opened:false},{opened:false},{opened:false},{opened:false}],
+    [{opened:false},{opened:false},{opened:false},{opened:false},{opened:false},{opened:false},{opened:false},{opened:false},{opened:false},{opened:false}],
+    [{opened:false},{opened:false},{opened:false},{opened:false},{opened:false},{opened:false},{opened:false},{opened:false},{opened:false},{opened:false}],
+    [{opened:false},{opened:false},{opened:false},{opened:false},{opened:false},{opened:false},{opened:false},{opened:false},{opened:false},{opened:false}],
+    [{opened:false},{opened:false},{opened:false},{opened:false},{opened:false},{opened:false},{opened:false},{opened:false},{opened:false},{opened:false}],
+    [{opened:false},{opened:false},{opened:false},{opened:false},{opened:false},{opened:false},{opened:false},{opened:false},{opened:false},{opened:false}],
+    [{opened:false},{opened:false},{opened:false},{opened:false},{opened:false},{opened:false},{opened:false},{opened:false},{opened:false},{opened:false}],
+    [{opened:false},{opened:false},{opened:false},{opened:false},{opened:false},{opened:false},{opened:false},{opened:false},{opened:false},{opened:false}],
   ],
   player: {
     one: "",
@@ -39,6 +51,9 @@ const COLS = 10, ROWS = 10;  // 横10、縦10マス
 var state = {}; // 試合中の情報
 var play_flg = false; //試合中か否かの判定フラグ
 var final_flg = false; //試合終了したか否かの判定フラグ
+var next_flg = false; //再戦希望か否かの判定フラグ
+var replay_flg = false; //再戦を受け入れたか否かの判定フラグ
+var exit_flg = false; //対戦相手が退出したか否かの判定フラグ
 var x = 0; //座標取得用変数のCOLS用
 var y = 0; //座標取得用変数のROWS用
 
@@ -82,7 +97,8 @@ app.get('/prepare' , function(req, res){
         }
         break;
     }
-	(flag_room) ? msg = 'その部屋は他のプレーヤーが対戦中です。' : msg = room['player'] + "が、" + room['optxt'] + "に入室しました";
+
+  (flag_room) ? msg = 'その部屋は他のプレーヤーが対戦中です。' : msg = "";
 
   res.set('Access-Control-Allow-Origin', process.env.ALLOW_ORIGIN);
   res.json(msg);
@@ -122,6 +138,11 @@ app.get('/flgmode' , function(req, res){
 app.get('/play' , function(req, res){
   if((roomA.length === 2) && (play_flg === false)){
     play_flg = true;
+    //オブジェクトを初期化
+    for(var key in state){
+      //オブジェクトの要素を一つずつ削除していく
+      delete state[key];
+    }
     state = Object.assign({},init_state);
 
     for(var i = 0; i < ROWS; i++){
@@ -144,8 +165,107 @@ app.get('/play' , function(req, res){
   res.json(msg);
 });
 
+app.get('/nextplay' , function(req, res){
+  next_flg = true;
+  res.set('Access-Control-Allow-Origin', process.env.ALLOW_ORIGIN);
+  res.json("");
+});
+
+app.get('/nextstatus' , function(req, res){
+  res.set('Access-Control-Allow-Origin', process.env.ALLOW_ORIGIN);
+  res.json({flg:next_flg});
+});
+
+app.get('/nextstart' , function(req, res){
+  //初期化
+  for(var k = 0; k < ROWS; k++){
+    for(var c = 0; c < COLS; c++){
+      delete state['map'][k][c]['opened'];
+      delete state['map'][k][c]['hasBom'];
+      delete state['map'][k][c]['numBom'];
+      delete state['map'][k][c]['hasFlag'];
+      delete state['client'][k][c]['opened'];
+      if(state['client'][k][c]['numBom'] !== undefined){
+        delete state['client'][k][c]['numBom'];
+        delete state['client'][k][c]['hasFlag'];
+      }
+    }
+  }
+  delete state['player']['one'];
+  delete state['player']['two'];
+  delete state['player']['oneID'];
+  delete state['player']['twoID'];
+  delete state['player']['roomName']
+  delete state['flg_mode']['one'];
+  delete state['flg_mode']['two'];
+  delete state['score']['one'];
+  delete state['score']['two'];
+  
+  console.log(state);
+  state = Object.assign({},init_state);
+  console.log(state);
+  
+  final_flg = false;
+  next_flg = false;
+  replay_flg = true;
+
+  for(var i = 0; i < ROWS; i++){
+    state['map'][i][Math.floor(Math.random() * 10)] = {opened:false, hasBom:true, numBom:"", hasFlag:false};
+  }
+
+  state['player']['one'] = roomA[0]['player'];
+  state['player']['two'] = roomA[1]['player'];
+  state['player']['oneID'] = roomA[0]['id'];
+  state['player']['twoID'] = roomA[1]['id'];
+  state['player']['roomName'] = roomA[0]['roomName'];
+  msg = "試合が開始しますので、よろしくお願いします。"
+  
+  res.set('Access-Control-Allow-Origin', process.env.ALLOW_ORIGIN);
+  res.json(msg);
+});
+
+app.get('/exit' , function(req, res){
+  var exitData = req.query
+  state = init_state;
+  play_flg = false;
+  final_flg = false;
+  next_flg = false;
+  exit_flg = true;
+  
+  for(var s = 0; s < roomA.length; s++){
+    (roomA[s]['id'] === exitData['id']) ? roomA.splice(s, 1) : "";
+  }
+  
+  msg = "";
+  res.set('Access-Control-Allow-Origin', process.env.ALLOW_ORIGIN);
+  res.json(msg);
+});
+
+app.get('/nextwait' , function(req, res){
+  if(exit_flg){
+    exit_flg = false;
+    msg = "対戦相手が退出しました。新しい対戦が入室してくるまでお待ちください。"
+    res.set('Access-Control-Allow-Origin', process.env.ALLOW_ORIGIN);
+    res.json({msg:msg,flg:'exit'});
+  }else if(replay_flg){
+    replay_flg = false;
+    msg = "対戦相手が再戦を受け入れましたので再試合が開始します。\nよろしくお願いします。"
+    res.set('Access-Control-Allow-Origin', process.env.ALLOW_ORIGIN);
+    res.json({msg:msg,flg:'replay'});
+  }else{
+    msg = ""
+    res.set('Access-Control-Allow-Origin', process.env.ALLOW_ORIGIN);
+    res.json({msg:msg,flg:""});
+  }
+});
+
 app.get('/status' , function(req, res){
-  (play_flg) ? msg = '試合が開始しましたので、よろしくお願いします。' : msg = "";
+  var data = [];
+  for(var a = 0; a < roomA.length; a++){
+    data.push(roomA[a]['player'] + "が、" + roomA[a]['roomName'] + "に入室しました");
+  }
+  msg = data;
+  (play_flg) ? msg = '試合が開始しましたので、よろしくお願いします。' : "";  
   res.set('Access-Control-Allow-Origin', process.env.ALLOW_ORIGIN);
   res.json({msg:msg,flg:play_flg});
 });
@@ -174,7 +294,7 @@ app.get('/set' , function(req, res){
     }
 
     // 対象座標の箇所を判定・処理
-    if(state['map'][calcY][calcX] === 0){
+    if((state['map'][calcY][calcX]['opened'] === false) && (state['map'][calcY][calcX]['hasBom'] === false)){
       // 所定の箇所を開き、その周囲に爆弾が無いかチェックしてオープンする。
       var counter = 0;
       for(var h = 0; h < directions.length; h++){
@@ -189,10 +309,12 @@ app.get('/set' , function(req, res){
         if(state['flg_mode']['one']){
           // 該当箇所を開き、対象プレーヤーから得点を減算する(間違った箇所にフラグを立てているため)
           (counter !== 0) ? state['map'][calcY][calcX] = {opened:true, hasBom:false, numBom:counter, hasFlag:true} : state['map'][calcY][calcX] = {opened:true, hasBom:false, numBom:"", hasFlag:true};
+          (counter !== 0) ? state['client'][calcY][calcX] = {opened:true, hasFlag:true} : state['client'][calcY][calcX] = {opened:true, hasFlag:true};
           state['score']['one'] = state['score']['one'] - 1;
         }else{
           // 該当箇所を開き、対象プレーヤーに得点を加算し、周囲のマスを開く
           (counter !== 0) ? state['map'][calcY][calcX] = {opened:true, hasBom:false, numBom:counter, hasFlag:false} : state['map'][calcY][calcX] = {opened:true, hasBom:false, numBom:"", hasFlag:false};
+          (counter !== 0) ? state['client'][calcY][calcX] = {opened:true, numBom:counter, hasFlag:false} : state['client'][calcY][calcX] = {opened:true, numBom:"", hasFlag:false};
           state['score']['one'] = state['score']['one'] + 1;
           judge(calcX, calcY, data['id']);
         }
@@ -200,10 +322,12 @@ app.get('/set' , function(req, res){
         if(state['flg_mode']['two']){
           // 該当箇所を開き、対象プレーヤーから得点を減算する(間違った箇所にフラグを立てているため)
           (counter !== 0) ? state['map'][calcY][calcX] = {opened:true, hasBom:false, numBom:counter, hasFlag:true} : state['map'][calcY][calcX] = {opened:true, hasBom:false, numBom:"", hasFlag:true};
+          (counter !== 0) ? state['client'][calcY][calcX] = {opened:true, hasFlag:true} : state['client'][calcY][calcX] = {opened:true, hasFlag:true};
           state['score']['two'] = state['score']['two'] - 1;
         }else{
           // 該当箇所を開き、対象プレーヤーに得点を加算し、周囲のマスを開く
           (counter !== 0) ? state['map'][calcY][calcX] = {opened:true, hasBom:false, numBom:counter, hasFlag:false} : state['map'][calcY][calcX] = {opened:true, hasBom:false, numBom:"", hasFlag:false};
+          (counter !== 0) ? state['client'][calcY][calcX] = {opened:true, numBom:counter, hasFlag:false} : state['client'][calcY][calcX] = {opened:true, numBom:"", hasFlag:false};
           state['score']['two'] = state['score']['two'] + 1;
           judge(calcX, calcY, data['id']);
         }
@@ -213,34 +337,40 @@ app.get('/set' , function(req, res){
       msg = "";
     }else if((state['map'][calcY][calcX]['opened']) && (state['map'][calcY][calcX]['hasFlag']) && (state['map'][calcY][calcX]['hasBom'] === false)){
       if((state['player']['oneID'] === data['id']) && (state['flg_mode']['one'])){
-        state['map'][calcY][calcX] = 0;
+        state['map'][calcY][calcX] = {opened:false, hasBom:false, numBom:"", hasFlag:false};
+        state['client'][calcY][calcX] = {opened:false};
         state['score']['one'] = state['score']['one'] + 1;
       }else if((state['player']['twoID'] === data['id']) && (state['flg_mode']['two'])){
-        state['map'][calcY][calcX] = 0;
+        state['map'][calcY][calcX] = {opened:false, hasBom:false, numBom:"", hasFlag:false};
+        state['client'][calcY][calcX] = {opened:false};
         state['score']['two'] = state['score']['two'] + 1;
       }
       msg = "";
     }else if((state['map'][calcY][calcX]['opened']) && (state['map'][calcY][calcX]['hasFlag']) && (state['map'][calcY][calcX]['hasBom'])){
       if((state['player']['oneID'] === data['id']) && (state['flg_mode']['one'])){
         state['map'][calcY][calcX] = {opened:false, hasBom:true, numBom:"", hasFlag:false};
+        state['client'][calcY][calcX] = {opened:false};
         state['score']['one'] = state['score']['one'] - 1;
       }else if((state['player']['twoID'] === data['id']) && (state['flg_mode']['two'])){
         state['map'][calcY][calcX] = {opened:false, hasBom:true, numBom:"", hasFlag:false};
+        state['client'][calcY][calcX] = {opened:false};
         state['score']['two'] = state['score']['two'] - 1;
       }
       msg = "";
     }else if((state['map'][calcY][calcX]['opened'] === false) && (state['map'][calcY][calcX]['hasBom'])){
       if((state['player']['oneID'] === data['id']) && (state['flg_mode']['one'])){
         state['map'][calcY][calcX] = {opened:true, hasBom:true, numBom:"", hasFlag:true};
+        state['client'][calcY][calcX] = {opened:true, hasFlag:true};
         state['score']['one'] = state['score']['one'] + 1;
         msg = "";
       }else if((state['player']['twoID'] === data['id']) && (state['flg_mode']['two'])){
         state['map'][calcY][calcX] = {opened:true, hasBom:true, numBom:"", hasFlag:true};
+        state['client'][calcY][calcX] = {opened:true, hasFlag:true};
         state['score']['two'] = state['score']['two'] + 1;
         msg = "";
       }else{
         final_flg = true;
-        (state['player']['oneID'] === data['id']) ? msg = '爆弾に引っかかったので、' + state['player']['one'] + 'さんの負けになります。' : msg = '爆弾に引っかかっ他ので、' + state['player']['two'] + 'さんの負けになります。';
+        (state['player']['oneID'] === data['id']) ? msg = '爆弾に引っかかったので、' + state['player']['one'] + 'さんの負けになります。' : msg = '爆弾に引っかかったので、' + state['player']['two'] + 'さんの負けになります。';
       }
     }
 
@@ -250,17 +380,19 @@ app.get('/set' , function(req, res){
     msg = '試合は終了しました。再試合を希望される場合は当サイトを再度読み込んでください。';
   }
   res.set('Access-Control-Allow-Origin', process.env.ALLOW_ORIGIN);
-  res.json(msg);
+  res.json({msg:msg,flg:final_flg});
 
 });
 
 app.get('/draw' , function(req, res){
   var cnt = 0;
   // 爆弾が埋まっている数＋現在開いているマスの数を計測
-  (play_flg)?[...Array(ROWS)].reduce((acc,c,idx) => ([...Array(COLS)].reduce((acc2,c2,idx2) => ((state['map'][idx][idx2] !== 0) ? cnt = cnt + 1 : cnt = cnt + 0),"")),""):"";
-  res.set('Access-Control-Allow-Origin', 'http://localhost:8000');
-  if(cnt !== (COLS * ROWS)){
-    res.json({msg:"", map:state['map']});
+  (play_flg)?[...Array(ROWS)].reduce((acc,c,idx) => ([...Array(COLS)].reduce((acc2,c2,idx2) => ((state['map'][idx][idx2]['opened']) ? cnt = cnt + 1 : cnt = cnt + 0),"")),""):"";
+  res.set('Access-Control-Allow-Origin', process.env.ALLOW_ORIGIN);
+  if((cnt !== (COLS * ROWS)) && (final_flg === false)){
+    res.json({msg:"", map:state['client']});
+  }else if((cnt !== (COLS * ROWS)) && (final_flg)){
+    res.json({msg:'対戦相手が爆弾に引っかかったので、あなたの勝利です。'});
   }else{
     final_flg = true;
     var part = '  ' + state['player']['one'] + 'さん：' + state['score']['one'] + '点\n  ' + state['player']['two'] + 'さん：' + state['score']['two'];
@@ -279,17 +411,18 @@ function judge(calcX, calcY, playerID){
   for(var p = 0; p < directions.length; p++){
     var tmpX = calcX - directions[p][0];
     var tmpY = calcY - directions[p][1];
-    if((tmpX >= 0) && (tmpX < COLS) && (tmpY >= 0) && (tmpY < ROWS) && (state['map'][tmpY][tmpX] === 0)){
+    if((tmpX >= 0) && (tmpX < COLS) && (tmpY >= 0) && (tmpY < ROWS) && (state['map'][tmpY][tmpX]['opened'] === false) && (state['map'][tmpY][tmpX]['hasBom'] === false)){
       var counter = 0;
       for(var g = 0; g < directions.length; g++){
         var tmp2X = tmpX - directions[g][0];
         var tmp2Y = tmpY - directions[g][1];
-        if((tmp2X >= 0) && (tmp2X < COLS) && (tmp2Y >= 0) && (tmp2Y < ROWS) && (state['map'][tmp2Y][tmp2X] !== 0)){
+        if((tmp2X >= 0) && (tmp2X < COLS) && (tmp2Y >= 0) && (tmp2Y < ROWS)){
           (state['map'][tmp2Y][tmp2X]['hasBom'])? counter = counter + 1 : counter = counter + 0;
         }
       }
       // 該当箇所を開き、対象プレーヤーに得点を加算
       (counter !== 0) ? state['map'][tmpY][tmpX] = {opened:true, hasBom:false, numBom:counter, hasFlag:false} : state['map'][tmpY][tmpX] = {opened:true, hasBom:false, numBom:"", hasFlag:false};
+      (counter !== 0) ? state['client'][tmpY][tmpX] = {opened:true, numBom:counter, hasFlag:false} : state['client'][tmpY][tmpX] = {opened:true, numBom:"", hasFlag:false};
       (state['player']['oneID'] === playerID) ? state['score']['one'] = state['score']['one'] + 1 : state['score']['two'] = state['score']['two'] + 1 ;
     }
   }
