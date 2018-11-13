@@ -130,7 +130,7 @@ function drawAll() {
               xhr.onreadystatechange = () => {
                 if(xhr.readyState === 4 && xhr.status === 200) {
                   localStorage.removeItem("msweep"); //ローカルストレージのIDを削除
-                  window.open('','_self').close(); //画面を閉じる
+                  window.close(); //画面を閉じる
                 }
               }
             }
@@ -225,4 +225,4 @@ function render() {
 }
 
 // 600ミリ秒ごとに状態を描画する関数を呼び出す
-setInterval( drawAll, 600 );
+setInterval( drawAll, 300 );

@@ -63,7 +63,7 @@ function exitPlay(){
     xhr.onreadystatechange = () => {
       if(xhr.readyState === 4 && xhr.status === 200) {
         localStorage.removeItem("msweep"); //ローカルストレージのIDを削除
-        window.open('','_self').close(); //画面を閉じる
+        window.close(); //画面を閉じる
       }
     }
   }
