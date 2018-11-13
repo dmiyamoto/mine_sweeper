@@ -224,5 +224,5 @@ function render() {
   ctx.strokeStyle = 'black';  // えんぴつの色を黒にする
 }
 
-// 60ミリ秒ごとに状態を描画する関数を呼び出す
-setInterval( drawAll, 60 );
+// 600ミリ秒ごとに状態を描画する関数を呼び出す
+setInterval( drawAll, 600 );
