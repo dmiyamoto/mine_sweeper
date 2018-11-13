@@ -40,13 +40,35 @@ function onClick(e) {
         document.getElementById('competition_start').disabled = true; // 対戦開始ボタンの操作を不可にする
         document.getElementById('flg_img').disabled = true; // フラグモードボタンの操作を不可にする
         document.getElementById('next_play').disabled = false; // 再戦するボタンの操作を可能にする
+        document.getElementById('exit_play').disabled = false; // 退出するボタンの操作を可能にする
       }
     }
   }
 
 }
   
-canvas.addEventListener('click', onClick, false); // 盤面がクリックされたら上記onClick関数を動作させる
+// 盤面がクリックされたら上記onClick関数を動作させる
+canvas.addEventListener('click', onClick, false); 
+
+
+// 退出処理を実行するための関数
+function exitPlay(){
+  if(localStorage.getItem("msweep") !== null){
+    param = "id=" + localStorage.getItem("msweep");
+    url = "/exit/?" + param;
+    xhr.open('GET', url, true);
+    xhr.send();
+    
+    // サーバーからの応答内容を処理
+    xhr.onreadystatechange = () => {
+      if(xhr.readyState === 4 && xhr.status === 200) {
+        localStorage.removeItem("msweep"); //ローカルストレージのIDを削除
+        window.open('','_self').close(); //画面を閉じる
+      }
+    }
+  }
+  
+}
 
 // 再戦処理を希望する関数
 function nextPlay(){
@@ -119,7 +141,7 @@ function init() {
       drawBlock( x, y );
     }
   }
-  document.getElementById('play').innerHTML = "<button id='competition_start' onclick='play()'>対戦開始</button> <button id='next_play' onclick='nextPlay()' disabled>再戦する</button>";
+  document.getElementById('play').innerHTML = "<button id='competition_start' onclick='play()'>対戦開始</button> <button id='next_play' onclick='nextPlay()' disabled>再戦する</button> <button id='exit_play' onclick='exitPlay()' disabled>退出する</button>";
   document.getElementById('flg').innerHTML = "<button id='flg_img' onclick='flg_button()' disabled ><img src='/img/flag_img.png' width='50' height='50'></button><i id='flg_mode'>フラグモード：OFF</i>"
 }
 
@@ -149,6 +171,7 @@ function start(idname){
           domMsg.innerHTML = new Date().toLocaleTimeString() + " " + msg;
           msgArea.appendChild(domMsg);
           play_flg = true;
+          restart_flg = true;
         }else{
           alert(msg);
         }
@@ -176,4 +199,3 @@ function start(idname){
   }
 
 }
-  

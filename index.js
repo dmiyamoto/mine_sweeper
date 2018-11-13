@@ -138,12 +138,27 @@ app.get('/flgmode' , function(req, res){
 app.get('/play' , function(req, res){
   if((roomA.length === 2) && (play_flg === false)){
     play_flg = true;
-    //オブジェクトを初期化
-    for(var key in state){
-      //オブジェクトの要素を一つずつ削除していく
-      delete state[key];
-    }
+    //オブジェクトを初期化（初回用）
     state = Object.assign({},init_state);
+    
+    //オブジェクトを初期化（２周目以降用）
+    for(var k = 0; k < ROWS; k++){
+      for(var c = 0; c < COLS; c++){
+        state['map'][k][c]['opened'] = false;
+        state['map'][k][c]['hasBom'] = false;
+        state['map'][k][c]['numBom'] = false;
+        state['map'][k][c]['hasFlag'] = false;
+        state['client'][k][c]['opened'] = false;
+        if(state['client'][k][c]['numBom'] !== undefined){
+          delete state['client'][k][c]['numBom'];
+          delete state['client'][k][c]['hasFlag'];
+        }
+      }
+    }
+    state['flg_mode']['one'] = false;
+    state['flg_mode']['two'] = false;
+    state['score']['one'] = 0;
+    state['score']['two'] = 0;
 
     for(var i = 0; i < ROWS; i++){
       state['map'][i][Math.floor(Math.random() * 10)] = {opened:false, hasBom:true, numBom:"", hasFlag:false};
@@ -180,30 +195,21 @@ app.get('/nextstart' , function(req, res){
   //初期化
   for(var k = 0; k < ROWS; k++){
     for(var c = 0; c < COLS; c++){
-      delete state['map'][k][c]['opened'];
-      delete state['map'][k][c]['hasBom'];
-      delete state['map'][k][c]['numBom'];
-      delete state['map'][k][c]['hasFlag'];
-      delete state['client'][k][c]['opened'];
+      state['map'][k][c]['opened'] = false;
+      state['map'][k][c]['hasBom'] = false;
+      state['map'][k][c]['numBom'] = false;
+      state['map'][k][c]['hasFlag'] = false;
+      state['client'][k][c]['opened'] = false;
       if(state['client'][k][c]['numBom'] !== undefined){
         delete state['client'][k][c]['numBom'];
         delete state['client'][k][c]['hasFlag'];
       }
     }
   }
-  delete state['player']['one'];
-  delete state['player']['two'];
-  delete state['player']['oneID'];
-  delete state['player']['twoID'];
-  delete state['player']['roomName']
-  delete state['flg_mode']['one'];
-  delete state['flg_mode']['two'];
-  delete state['score']['one'];
-  delete state['score']['two'];
-  
-  console.log(state);
-  state = Object.assign({},init_state);
-  console.log(state);
+  state['flg_mode']['one'] = false;
+  state['flg_mode']['two'] = false;
+  state['score']['one'] = 0;
+  state['score']['two'] = 0;
   
   final_flg = false;
   next_flg = false;
@@ -226,7 +232,32 @@ app.get('/nextstart' , function(req, res){
 
 app.get('/exit' , function(req, res){
   var exitData = req.query
-  state = init_state;
+  
+  for(var k = 0; k < ROWS; k++){
+    for(var c = 0; c < COLS; c++){
+      state['map'][k][c]['opened'] = false;
+      state['map'][k][c]['hasBom'] = false;
+      state['map'][k][c]['numBom'] = false;
+      state['map'][k][c]['hasFlag'] = false;
+      state['client'][k][c]['opened'] = false;
+      if(state['client'][k][c]['numBom'] !== undefined){
+        delete state['client'][k][c]['numBom'];
+        delete state['client'][k][c]['hasFlag'];
+      }
+    }
+  }
+  if(state['player']['oneID'] === exitData['id']){
+    state['player']['one'] = "";
+    state['player']['oneID'] = "";
+  }else{
+    state['player']['two'] = "";
+    state['player']['twoID'] = "";
+  }
+  state['flg_mode']['one'] = false;
+  state['flg_mode']['two'] = false;
+  state['score']['one'] = 0;
+  state['score']['two'] = 0;
+  
   play_flg = false;
   final_flg = false;
   next_flg = false;
@@ -244,7 +275,7 @@ app.get('/exit' , function(req, res){
 app.get('/nextwait' , function(req, res){
   if(exit_flg){
     exit_flg = false;
-    msg = "対戦相手が退出しました。新しい対戦が入室してくるまでお待ちください。"
+    msg = "対戦相手が退出しました。新しい対戦相手が入室してくるまでお待ちください。"
     res.set('Access-Control-Allow-Origin', process.env.ALLOW_ORIGIN);
     res.json({msg:msg,flg:'exit'});
   }else if(replay_flg){
@@ -392,7 +423,7 @@ app.get('/draw' , function(req, res){
   if((cnt !== (COLS * ROWS)) && (final_flg === false)){
     res.json({msg:"", map:state['client']});
   }else if((cnt !== (COLS * ROWS)) && (final_flg)){
-    res.json({msg:'対戦相手が爆弾に引っかかったので、あなたの勝利です。'});
+    res.json({msg:'対戦相手が爆弾に引っかかったので、あなたの勝利です。', map:state['client']});
   }else{
     final_flg = true;
     var part = '  ' + state['player']['one'] + 'さん：' + state['score']['one'] + '点\n  ' + state['player']['two'] + 'さん：' + state['score']['two'];

@@ -4,12 +4,13 @@
 const canvas = document.getElementsByTagName( 'canvas' )[ 0 ];  // キャンバス
 const ctx = canvas.getContext( '2d' ); // コンテクスト
 const W = 500, H = 500;  // キャンバスのサイズ
-const COLS = 10, ROWS = 10;  // 横10、縦10マス 
+const COLS = 10, ROWS = 10;  // 横10、縦10マス
 const BLOCK_W = W / COLS, BLOCK_H = H / ROWS;  // マスの幅を設定
 var x = 0; //座標取得用変数のCOLS用
 var y = 0; //座標取得用変数のROWS用
 
 var play_flg = false; //試合中か否かの判定フラグ
+var restart_flg = false; //再入室したか否かの判定フラグ
 var final_flg = false; //試合終了したか否かの判定フラグ
 var flg_mode = false; //フラグモードか否かの判定フラグ
 var next_flg = false; //再戦希望か否かの判定フラグ
@@ -46,8 +47,10 @@ function drawAll() {
       xhr.onreadystatechange = () => {
         if(xhr.readyState === 4 && xhr.status === 200) {
           tmpResponse = JSON.parse(xhr.responseText);
-          if(tmpResponse['msg'] === ""){
+          if((tmpResponse['msg'] === "")||(restart_flg)){
             state_info = tmpResponse['map'];
+            restart_flg = false; // 再入室時１回のみの処理
+            
             for(var q = 0; q < ROWS; q++){ //y座標の処理ループ
               for(var t = 0; t < COLS; t++){ //x座標の処理ループ
                 
@@ -80,6 +83,7 @@ function drawAll() {
               document.getElementById('competition_start').disabled = true; // 対戦開始ボタンの操作を不可にする
               document.getElementById('flg_img').disabled = true; // フラグモードボタンの操作を不可にする
               document.getElementById('next_play').disabled = false; // 再戦するボタンの操作を可能にする
+              document.getElementById('exit_play').disabled = false; // 退出するボタンの操作を可能にする
               alert(tmpResponse['msg']);
             }
           }
@@ -106,15 +110,16 @@ function drawAll() {
               xhr.onreadystatechange = () => {
                 if(xhr.readyState === 4 && xhr.status === 200) {
                   var tmp = JSON.parse(xhr.responseText);
-                  final_flg = false;
                   init(); //初期化処理を実施する
+                  final_flg = false;
                   document.getElementById('competition_start').disabled = false; // 対戦開始ボタンの操作を可能にする
                   document.getElementById('flg_img').disabled = false; // フラグモードボタンの操作を可能にする
                   document.getElementById('next_play').disabled = true; // 再戦するボタンの操作を不可にする
-                  alert(tmp['msg']);
+                  document.getElementById('exit_play').disabled = true; // 退出するボタンの操作を不可にする
+                  alert(tmp);
                 }
               }
-            } else {
+            }else {
               // キャンセルボタン押下時の処理
               param = "id=" + localStorage.getItem("msweep");
               url = "/exit/?" + param;
@@ -151,6 +156,7 @@ function drawAll() {
               document.getElementById('competition_start').disabled = false; // 対戦開始ボタンの操作を可能にする
               document.getElementById('flg_img').disabled = false; // フラグモードボタンの操作を可能にする
               document.getElementById('next_play').disabled = true; // 再戦するボタンの操作を不可にする
+              document.getElementById('exit_play').disabled = true; // 退出するボタンの操作を不可にする
               break;
             case 'replay':
               next_flg = false;
@@ -159,6 +165,7 @@ function drawAll() {
               document.getElementById('competition_start').disabled = false; // 対戦開始ボタンの操作を可能にする
               document.getElementById('flg_img').disabled = false; // フラグモードボタンの操作を可能にする
               document.getElementById('next_play').disabled = true; // 再戦するボタンの操作を不可にする
+              document.getElementById('exit_play').disabled = true; // 退出するボタンの操作を不可にする
               alert(reply['msg']);
               break;
             default:
@@ -218,4 +225,4 @@ function render() {
 }
 
 // 60ミリ秒ごとに状態を描画する関数を呼び出す
-setInterval( drawAll, 60 );
+setInterval( drawAll, 3000 );
