@@ -1,6 +1,6 @@
 //windowが閉じた時のイベント登録
 window.onbeforeunload = function(){
-  if(window.confirm('退出されますか？\n退出する場合はOK、途中退席する場合(※試合自体は続行中)はキャンセルを押してください。')){
+  if(window.open('','_self').confirm('退出されますか？\n退出する場合はOK、途中退席する場合(※試合自体は続行中)はキャンセルを押してください。')){
     param = "id=" + localStorage.getItem("msweep");
     url = "/exit/?" + param;
     xhr.open('GET', url, true);
@@ -63,7 +63,7 @@ function exitPlay(){
     xhr.onreadystatechange = () => {
       if(xhr.readyState === 4 && xhr.status === 200) {
         localStorage.removeItem("msweep"); //ローカルストレージのIDを削除
-        window.close(); //画面を閉じる
+        window.open('','_self').close(); //画面を閉じる
       }
     }
   }
