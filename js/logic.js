@@ -73,6 +73,7 @@ function exitPlay(){
 // 再戦処理を希望する関数
 function nextPlay(){
   if(localStorage.getItem("msweep") !== null){
+    next_flg = true;
     var id = localStorage.getItem("msweep");
     param = "id=" + id;
     url = "/nextplay/?" + param;
@@ -83,6 +84,8 @@ function nextPlay(){
     xhr.onreadystatechange = () => {
       if(xhr.readyState === 4 && xhr.status === 200) {
         next_flg = true;
+      }else{
+        next_flg = false;
       }
     }
   }
