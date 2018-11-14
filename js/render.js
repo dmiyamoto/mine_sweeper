@@ -225,4 +225,4 @@ function render() {
 }
 
 // 800ミリ秒ごとに状態を描画する関数を呼び出す
-setInterval( drawAll, 100 );
+setInterval( drawAll, 500 );
