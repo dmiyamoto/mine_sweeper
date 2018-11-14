@@ -100,7 +100,7 @@ function drawAll() {
           var nextFlg = JSON.parse(xhr.responseText);
           if(nextFlg['flg']){
             // 確認ダイアログの表示
-            if(window.open('','_self').confirm('対戦相手が再戦を希望しています。再戦されますか？\n再戦する場合はOK、退出する場合はキャンセルを押してください。')){
+            if(window.open('./index.html','_self').confirm('対戦相手が再戦を希望しています。再戦されますか？\n再戦する場合はOK、退出する場合はキャンセルを押してください。')){
               // OKボタン押下時の処理
               url = "/nextstart/";
               xhr.open('GET', url, true);
@@ -130,7 +130,7 @@ function drawAll() {
               xhr.onreadystatechange = () => {
                 if(xhr.readyState === 4 && xhr.status === 200) {
                   localStorage.removeItem("msweep"); //ローカルストレージのIDを削除
-                  window.open('','_self').close();; //画面を閉じる
+                  window.open('./index.html','_self').close(); //画面を閉じる
                 }
               }
             }

@@ -1,6 +1,6 @@
 //windowが閉じた時のイベント登録
-window.onbeforeunload = function(){
-  if(window.open('','_self').confirm('退出されますか？\n退出する場合はOK、途中退席する場合(※試合自体は続行中)はキャンセルを押してください。')){
+window.open('./index.html','_self').onbeforeunload = function(){
+  if(window.open('./index.html','_self').confirm('退出されますか？\n退出する場合はOK、途中退席する場合(※試合自体は続行中)はキャンセルを押してください。')){
     param = "id=" + localStorage.getItem("msweep");
     url = "/exit/?" + param;
     xhr.open('GET', url, true);
@@ -10,11 +10,11 @@ window.onbeforeunload = function(){
     xhr.onreadystatechange = () => {
       if(xhr.readyState === 4 && xhr.status === 200) {
         localStorage.removeItem("msweep"); //ローカルストレージのIDを削除
-        window.open('','_self').close(); //画面を閉じる
+        window.open('./index.html','_self').close(); //画面を閉じる
       }
     }
   }else{
-    window.open('','_self').close(); //画面を閉じる
+    window.open('./index.html','_self').close(); //画面を閉じる
   }
 }
 
@@ -34,7 +34,6 @@ function onClick(e) {
   xhr.onreadystatechange = () => {
     if(xhr.readyState === 4 && xhr.status === 200) {
       var data = JSON.parse(xhr.responseText);
-      (data['msg'] !== "") ? alert(data['msg']) : "";
       if(data['flg']){
         final_flg = true; //試合終了フラグをONにする
         document.getElementById('competition_start').disabled = true; // 対戦開始ボタンの操作を不可にする
@@ -42,6 +41,7 @@ function onClick(e) {
         document.getElementById('next_play').disabled = false; // 再戦するボタンの操作を可能にする
         document.getElementById('exit_play').disabled = false; // 退出するボタンの操作を可能にする
       }
+      (data['msg'] !== "") ? alert(data['msg']) : "";
     }
   }
 
@@ -63,7 +63,7 @@ function exitPlay(){
     xhr.onreadystatechange = () => {
       if(xhr.readyState === 4 && xhr.status === 200) {
         localStorage.removeItem("msweep"); //ローカルストレージのIDを削除
-        window.open('','_self').close(); //画面を閉じる
+        window.open('./index.html','_self').close(); //画面を閉じる
       }
     }
   }
