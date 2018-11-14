@@ -426,7 +426,7 @@ app.get('/draw' , function(req, res){
     res.json({msg:'対戦相手が爆弾に引っかかったので、あなたの勝利です。', map:state['client']});
   }else{
     final_flg = true;
-    var part = '  ' + state['player']['one'] + 'さん：' + state['score']['one'] + '点\n  ' + state['player']['two'] + 'さん：' + state['score']['two'];
+    var part = '  ' + state['player']['one'] + 'さん：' + state['score']['one'] + '点\n  ' + state['player']['two'] + 'さん：' + state['score']['two'] + '点';
     if(state['score']['one'] === state['score']['two']){
       res.json({msg:'この勝負は引き分けになります。\n' + part});
     }else if(state['score']['one'] > state['score']['two']){

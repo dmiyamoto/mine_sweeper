@@ -108,7 +108,7 @@ function drawAll() {
               
               // サーバーからの応答内容を処理
               xhr.onreadystatechange = () => {
-                if(xhr.readyState === 4 && xhr.status === 200) {
+                if((xhr.readyState === 4 && xhr.status === 200)||(xhr.readyState === 4 && xhr.status === 304)) {
                   var tmp = JSON.parse(xhr.responseText);
                   init(); //初期化処理を実施する
                   final_flg = false;
