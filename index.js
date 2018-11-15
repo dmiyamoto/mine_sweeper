@@ -452,8 +452,14 @@ function judge(calcX, calcY, playerID){
         }
       }
       // 該当箇所を開き、対象プレーヤーに得点を加算
-      (counter !== 0) ? state['map'][tmpY][tmpX] = {opened:true, hasBom:false, numBom:counter, hasFlag:false} : state['map'][tmpY][tmpX] = {opened:true, hasBom:false, numBom:"", hasFlag:false};
-      (counter !== 0) ? state['client'][tmpY][tmpX] = {opened:true, numBom:counter, hasFlag:false} : state['client'][tmpY][tmpX] = {opened:true, numBom:"", hasFlag:false};
+      if(counter !== 0){
+        state['map'][tmpY][tmpX] = {opened:true, hasBom:false, numBom:counter, hasFlag:false};
+        state['client'][tmpY][tmpX] = {opened:true, numBom:counter, hasFlag:false};
+      }else{
+        state['map'][tmpY][tmpX] = {opened:true, hasBom:false, numBom:"", hasFlag:false};
+        state['client'][tmpY][tmpX] = {opened:true, numBom:"", hasFlag:false};
+        judge(tmpX, tmpY, playerID); // 再帰処理(周囲に爆弾が無い時だけ連鎖爆発させる)
+      }
       (state['player']['oneID'] === playerID) ? state['score']['one'] = state['score']['one'] + 1 : state['score']['two'] = state['score']['two'] + 1 ;
     }
   }
