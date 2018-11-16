@@ -19,10 +19,10 @@ var xhr = new XMLHttpRequest(); // Ajaxの設定
 var url; // ルーティング用変数
 var param; // ルーティングのパラメーター用変数
 
-var msg_roomA = []; //入室メッセージ管理用
+var msg_roomA = []; //メッセージ管理用
 
 // 入室情報を画面上に表示するためのエリア情報を認識
-var msgArea = document.querySelector("#msg");
+// var msgArea = document.querySelector("#msg");
 
 // x, yの部分へマスを描画する処理
 function drawBlock( x, y ) {
@@ -81,7 +81,6 @@ function drawAll() {
             if(final_flg === false){
               final_flg = true; //試合終了フラグをONにする
               document.getElementById('competition_start').disabled = true; // 対戦開始ボタンの操作を不可にする
-              document.getElementById('flg_img').disabled = true; // フラグモードボタンの操作を不可にする
               document.getElementById('next_play').disabled = false; // 再戦するボタンの操作を可能にする
               document.getElementById('exit_play').disabled = false; // 退出するボタンの操作を可能にする
               alert(tmpResponse['msg']);
@@ -113,7 +112,6 @@ function drawAll() {
                   init(); //初期化処理を実施する
                   final_flg = false;
                   document.getElementById('competition_start').disabled = false; // 対戦開始ボタンの操作を可能にする
-                  document.getElementById('flg_img').disabled = false; // フラグモードボタンの操作を可能にする
                   document.getElementById('next_play').disabled = true; // 再戦するボタンの操作を不可にする
                   document.getElementById('exit_play').disabled = true; // 退出するボタンの操作を不可にする
                   alert(tmp);
@@ -153,19 +151,11 @@ function drawAll() {
               play_flg = false;
               final_flg = false;
               init(); //初期化処理を実施する
-              document.getElementById('competition_start').disabled = false; // 対戦開始ボタンの操作を可能にする
-              document.getElementById('flg_img').disabled = false; // フラグモードボタンの操作を可能にする
-              document.getElementById('next_play').disabled = true; // 再戦するボタンの操作を不可にする
-              document.getElementById('exit_play').disabled = true; // 退出するボタンの操作を不可にする
               break;
             case 'replay':
               next_flg = false;
               final_flg = false;
               init(); //初期化処理を実施する
-              document.getElementById('competition_start').disabled = false; // 対戦開始ボタンの操作を可能にする
-              document.getElementById('flg_img').disabled = false; // フラグモードボタンの操作を可能にする
-              document.getElementById('next_play').disabled = true; // 再戦するボタンの操作を不可にする
-              document.getElementById('exit_play').disabled = true; // 退出するボタンの操作を不可にする
               alert(reply['msg']);
               break;
             default:
@@ -189,7 +179,6 @@ function drawAll() {
         if(xhr.readyState === 4 && xhr.status === 200) {
           tmpResponse = JSON.parse(xhr.responseText);
           (tmpResponse['flg'])? play_flg = tmpResponse['flg'] : ""; //試合開始する
-          (tmpResponse['flg'])? document.getElementById('flg_img').disabled = false : ""; // フラグモードボタンの操作を可能にする
           if(play_flg){
             alert(tmpResponse['msg']);
           }else{
@@ -198,18 +187,20 @@ function drawAll() {
                 if(msg_roomA.length !== 0){
                   (msg_roomA[0] !== tmpResponse['msg'][t]) ? msg_roomA.push(tmpResponse['msg'][t]) : "";
                   if(msg_roomA[0] !== tmpResponse['msg'][t]){
-                    var domMsg = document.createElement("div");
-                    domMsg.innerHTML = new Date().toLocaleTimeString() + " " + tmpResponse['msg'][t];
-                    msgArea.appendChild(domMsg);
+                    var content = msg_roomA[0];
+                    for(var s = 1; s < msg_roomA.length; s++){
+                      content = content + '\n\n' + msg_roomA[s];
+                    }
+                    document.getElementById('msg').value = content;
                   }
                 }else{
                   msg_roomA.push(tmpResponse['msg'][t]);
-                  var domMsg = document.createElement("div");
-                  domMsg.innerHTML = new Date().toLocaleTimeString() + " " + tmpResponse['msg'][t];
-                  msgArea.appendChild(domMsg);
+                  var content = msg_roomA[0];
+                  document.getElementById('msg').value = content;
                 }
               }
             }
+            
           }
         }
       }  

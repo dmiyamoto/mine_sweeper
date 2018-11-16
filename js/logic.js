@@ -1,6 +1,6 @@
 //windowが閉じた時のイベント登録
 window.onbeforeunload = function(){
-  if(window.open('/','_self').confirm('退出されますか？\n退出する場合はOK、途中退席する場合(※試合自体は続行中)はキャンセルを押してください。')){
+  if(window.confirm('退出されますか？\n退出する場合はOK、途中退席する場合(※試合自体は続行中)はキャンセルを押してください。')){
     param = "id=" + localStorage.getItem("msweep");
     url = "/exit/?" + param;
     xhr.open('GET', url, true);
@@ -18,14 +18,14 @@ window.onbeforeunload = function(){
   }
 }
 
-// 盤面がクリックされたら動作する関数
+// 盤面が左クリックされたら動作する関数
 function onClick(e) {
   var rect = e.target.getBoundingClientRect();
   var x = e.clientX - rect.left;
   var y = e.clientY - rect.top;
   var playerID = localStorage.getItem("msweep");
 
-  param = "id=" + playerID + "&x=" + x + "&y=" + y;
+  param = "id=" + playerID + "&x=" + x + "&y=" + y + "&flg=" + "";
   url = "/set/?" + param;
   xhr.open('GET', url, true);
   xhr.send();
@@ -37,7 +37,6 @@ function onClick(e) {
       if(data['flg']){
         final_flg = true; //試合終了フラグをONにする
         document.getElementById('competition_start').disabled = true; // 対戦開始ボタンの操作を不可にする
-        document.getElementById('flg_img').disabled = true; // フラグモードボタンの操作を不可にする
         document.getElementById('next_play').disabled = false; // 再戦するボタンの操作を可能にする
         document.getElementById('exit_play').disabled = false; // 退出するボタンの操作を可能にする
       }
@@ -47,8 +46,43 @@ function onClick(e) {
 
 }
   
-// 盤面がクリックされたら上記onClick関数を動作させる
+// 盤面が左クリックされたら上記onClick関数を動作させる
 canvas.addEventListener('click', onClick, false); 
+
+
+// 盤面が右クリックされたら動作する関数
+function onRightClick(e) {
+  // ブラウザーのデフォルトの右クリックの挙動を阻止する
+  e.preventDefault();
+  
+  var rect = e.target.getBoundingClientRect();
+  var x = e.clientX - rect.left;
+  var y = e.clientY - rect.top;
+  var playerID = localStorage.getItem("msweep");
+
+  param = "id=" + playerID + "&x=" + x + "&y=" + y + "&flg=true";
+  url = "/set/?" + param;
+  xhr.open('GET', url, true);
+  xhr.send();
+
+  // サーバーからの応答内容を処理
+  xhr.onreadystatechange = () => {
+    if(xhr.readyState === 4 && xhr.status === 200) {
+      var data = JSON.parse(xhr.responseText);
+      if(data['flg']){
+        final_flg = true; //試合終了フラグをONにする
+        document.getElementById('competition_start').disabled = true; // 対戦開始ボタンの操作を不可にする
+        document.getElementById('next_play').disabled = false; // 再戦するボタンの操作を可能にする
+        document.getElementById('exit_play').disabled = false; // 退出するボタンの操作を可能にする
+      }
+      (data['msg'] !== "") ? alert(data['msg']) : "";
+    }
+  }
+
+}
+
+// 盤面が右クリックされたら上記onRightClick関数を動作させる
+canvas.addEventListener('contextmenu', onRightClick, false); 
 
 
 // 退出処理を実行するための関数
@@ -103,35 +137,8 @@ function play(){
   xhr.onreadystatechange = () => {
     if(xhr.readyState === 4 && xhr.status === 200) {
       play_flg = true; //試合開始する
-      document.getElementById('flg_img').disabled = false; // フラグモードボタンの操作を可能にする
       var msg = JSON.parse(xhr.responseText);
       alert(msg);
-    }
-  }
-
-}
-
-// フラグモード設定ボタンがクリックされた動作する関数（フラグモード：ONの際は爆弾の箇所にフラグを建てる）
-function flg_button(){
-  var id = localStorage.getItem("msweep");
-  param = "id=" + id;
-  url = "/flgmode/?" + param;
-  xhr.open('GET', url, true);
-  xhr.send();
-
-  // サーバーからの応答内容を処理
-  xhr.onreadystatechange = () => {
-    if(xhr.readyState === 4 && xhr.status === 200) {
-      var tempRes = JSON.parse(xhr.responseText);
-      if(tempRes['flgmode'] !== ""){
-        flg_mode = tempRes['flgmode'];
-        (flg_mode) ? document.getElementById('flg_mode').innerHTML = "フラグモード：ON" : document.getElementById('flg_mode').innerHTML = "フラグモード：OFF";
-      }else{
-        final_flg = true; //試合終了フラグをONにする
-        document.getElementById('flg_img').disabled = true; // フラグモードボタンの操作を不可にする
-        msg = tempRes['msg'];
-        alert(msg);
-      }
     }
   }
 
@@ -145,7 +152,7 @@ function init() {
     }
   }
   document.getElementById('play').innerHTML = "<button id='competition_start' onclick='play()'>対戦開始</button> <button id='next_play' onclick='nextPlay()' disabled>再戦する</button> <button id='exit_play' onclick='exitPlay()' disabled>退出する</button>";
-  document.getElementById('flg').innerHTML = "<button id='flg_img' onclick='flg_button()' disabled ><img src='/img/flag_img.png' width='50' height='50'></button><i id='flg_mode'>フラグモード：OFF</i>"
+  document.getElementById('wrapper').style.display="block";
 }
 
 // 当マインスイーパーアプリのサーバ側に接続する
@@ -170,9 +177,14 @@ function start(idname){
         var msg = JSON.parse(xhr.responseText);
         if(msg !== 'その部屋は他のプレーヤーが対戦中です。'){
           init(); // 初期化処理
-          var domMsg = document.createElement("div");
-          domMsg.innerHTML = new Date().toLocaleTimeString() + " " + msg;
-          msgArea.appendChild(domMsg);
+          // msg_roomA.push(new Date().toLocaleTimeString() + " " + msg);
+          // console.log(msg_roomA);
+          // var content = msg_roomA[0];
+          // for(var s = 1; s < msg_roomA.length; s++){
+          //   content = content + '\n\n' + msg_roomA[s];
+          // }
+          // // document.getElementById('msg').innerHTML = '<textarea name="textarea" id="textarea" cols="320" rows=400></textarea>';
+          // document.getElementById('msg').textarea.value = content;
           play_flg = true;
           restart_flg = true;
         }else{

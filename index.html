@@ -4,31 +4,35 @@
     <meta charset="UTF-8">
     <title>マインスイーパー</title>
     <style>
-        canvas { 
-          display: block; 
-          margin: auto;
+        canvas{
+          margin-left:20px;
+        }
+        #box{
+          width:66%;
+          margin:15px auto;
+          display: flex;
+          flex-direction: row;
         }
         #play {
           text-align: center;
-          margin-top:15px;
         }
-        #flg {
-          text-align: center;
-          margin: 5px auto;
-          height: 5px;
+        #msg {
+          width:320px;
+          height:220px;
+          vertical-align:top;
+          margin-right:30px;
+          margin-bottom:20px;
         }
-        #flg_img {
-          position:relative; 
-          top:10px;
-          left:380px;
+        #wrapper{
+          width:325px;
         }
-        #flg_mode {
-          position:relative; 
-          top:40px;
-          left:310px;
+        #explanation{
+          border: 1px outset black;
+          width:325px;
+          font-size:12px;
         }
-        #next_play #exit_play{
-          margin-left: 20px;
+        #next_play, #exit_play{
+          margin-top: 5px;
         }
     </style>
 </head>
@@ -45,12 +49,30 @@
             </select>
         </label>
         <button onclick="start('room')">入室</button>
-        <div id="msg"></div>
     </header>
 
-    <div id="flg"></div>
-    <canvas width="500" height="500"></canvas>
-    <div id="play"></div>
+    <div id="box">
+      <div id="wrapper" style="display:none;">
+        <label for="msg">＜ステータス＞</label>
+        <textarea name="textarea" id="msg" cols="320" rows=400 readOnly></textarea>
+        <label for="explanation">＜当ゲームのルールについて＞</label>
+        <div id="explanation">
+          <p>当マインスイーパーは１対１の対戦ゲームです。</p>
+          <p>自動でセットされた爆弾マス上には右クリックで旗を立て、<br>
+            それ以外は左クリックで開いて自分の陣地にしてください。<br>
+            自分の陣地1マスにつき、1点がもらえます。</p>
+          <p>爆弾マスに旗を立てれば、1マスにつき1点がもらえます。<br>
+            （※爆弾が無いマス上の旗１マスにつき1点マイナスです。<br>
+            　　旗が立ってるマスは右クリックで閉じる事ができ、<br>
+            　　爆弾が無いマス上の旗を閉じる事ができれば、<br>
+            　　1点がもらえます。</p>
+          <p>爆弾マスを誤って左クリックすると、開いたプレーヤーが<br>
+            即座に負けとなりますので、ご注意ください。</p>
+        </div>
+      </div>
+      <canvas width="500" height="500"></canvas>
+      <div id="play"></div>
+    </div>
     <script src="js/render.js"></script>
     <script src="js/logic.js"></script>
 </body>
