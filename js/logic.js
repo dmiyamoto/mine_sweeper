@@ -5,7 +5,7 @@ window.onbeforeunload = function(){
     url = '/exit/?' + param;
     xhr.open('GET', url, true);
     xhr.send();
-    
+
     // サーバーからの応答内容を処理
     xhr.onreadystatechange = () => {
       if(xhr.readyState === 4 && xhr.status === 200) {
@@ -35,10 +35,7 @@ function onClick(e) {
     if(xhr.readyState === 4 && xhr.status === 200) {
       const data = JSON.parse(xhr.responseText);
       if(data['flg']){
-        final_flg = true; //試合終了フラグをONにする
         document.getElementById('competition_start').disabled = true; // 対戦開始ボタンの操作を不可にする
-        document.getElementById('next_play').disabled = false; // 再戦するボタンの操作を可能にする
-        document.getElementById('exit_play').disabled = false; // 退出するボタンの操作を可能にする
       }
       (data['msg'] !== '') ? alert(data['msg']) : '';
     }
@@ -151,7 +148,7 @@ function init() {
       drawBlock( x, y );
     }
   }
-  document.getElementById('play').innerHTML = "<button id='competition_start' onclick='play()'>対戦開始</button> <button id='next_play' onclick='nextPlay()' disabled>再戦する</button> <button id='exit_play' onclick='exitPlay()' disabled>退出する</button>";
+  document.getElementById('play').innerHTML = "<button id='competition_start' onclick='play()'>対戦開始</button>";
   document.getElementById('wrapper').style.display="block";
 }
 

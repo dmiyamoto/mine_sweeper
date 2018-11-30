@@ -39,7 +39,10 @@ function drawAll() {
     if(final_flg === false){
       let tmpResponse;
       let state_info;
-      url = '/draw/';
+      const playerID = localStorage.getItem('msweep');
+
+      param = 'id=' + playerID;
+      url = '/draw/?' + param;
       xhr.open('GET', url, true);
       xhr.send();
 
@@ -79,11 +82,7 @@ function drawAll() {
           }else{
             // 試合終了のメッセージ表示
             if(final_flg === false){
-              final_flg = true; //試合終了フラグをONにする
-              document.getElementById('competition_start').disabled = true; // 対戦開始ボタンの操作を不可にする
-              document.getElementById('next_play').disabled = false; // 再戦するボタンの操作を可能にする
-              document.getElementById('exit_play').disabled = false; // 退出するボタンの操作を可能にする
-              alert(tmpResponse['msg']);
+              modal(tmpResponse['msg']); // modal画面を呼び出す。
             }
           }
         }
@@ -213,6 +212,32 @@ function drawAll() {
 function render() {
   ctx.clearRect( 0, 0, W, H );  // 一度キャンバスを真っさらにする
   ctx.strokeStyle = 'black';  // えんぴつの色を黒にする
+}
+
+// 画面中央の場所を計算してモーダルコンテンツ用cssにその内容を反映する
+function modal(msg) {
+  final_flg = true; //試合終了フラグをONにする
+  const target = document.getElementById('target_bg');
+  target.innerHTML = "<div id='modal-bg'></div>";
+  const modal_bg = document.getElementById('modal-bg');
+  const modal_content = document.getElementById('modal-content');
+  const modal_content_innar = document.getElementById('modal-content-innar');
+  const w = window.innerWidth;
+  const h = window.innerHeight;
+  const cw = modal_content_innar.getBoundingClientRect().width;
+  const ch = modal_content_innar.getBoundingClientRect().height;
+
+  //取得した値をcssに追加する
+  modal_content.style.left= ((w - cw)/3) + 'px';
+  modal_content.style.top= + ((h - ch)/3) + 'px';
+  
+  modal_content.style.display = 'block';
+  modal_bg.style.display = 'block';
+  
+  modal_content_innar.innerHTML = "<p>" + msg + "</p>" + 
+                                  "<button id='next_play' onclick='nextPlay()' >再戦する</button>" + 
+                                  "<button id='exit_play' onclick='exitPlay()' >退出する</button>";
+  document.getElementById('competition_start').disabled = true; // 対戦開始ボタンの操作を不可にする
 }
 
 // 800ミリ秒ごとに状態を描画する関数を呼び出す
